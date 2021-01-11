@@ -163,9 +163,9 @@ namespace IM.SQL
                 return null;
 
             dt = ds.Tables[1];
-            int total_users = int.Parse(ds.Tables[0].Rows[0][0].ToString());
+            int Total_Users = int.Parse(ds.Tables[0].Rows[0][0].ToString());
 
-            var users = (from rw in dt.AsEnumerable()
+            var Users = (from rw in dt.AsEnumerable()
                              select new User()
                              {
                                  Id = rw["Id"].ToString(),
@@ -179,8 +179,8 @@ namespace IM.SQL
 
             return new UsersWithPage
             {
-                Total_Users = total_users,
-                Users = users
+                Total_Users = Total_Users,
+                Users = Users
             };
         }
     } // end of class

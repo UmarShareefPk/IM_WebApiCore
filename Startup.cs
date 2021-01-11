@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Serialization;
 
 namespace IM_Core
 {
@@ -27,7 +28,14 @@ namespace IM_Core
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-           
+
+            services.AddMvc(setupAction => {
+                setupAction.EnableEndpointRouting = false;
+            }).AddJsonOptions(jsonOptions =>
+            {
+                jsonOptions.JsonSerializerOptions.PropertyNamingPolicy = null;
+            })
+             .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
         }
 

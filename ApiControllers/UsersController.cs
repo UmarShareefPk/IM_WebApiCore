@@ -76,18 +76,26 @@ namespace IM_Core.ApiControllers
                 {
                     if (formFile.Length > 0)
                     {
-                       Directory.CreateDirectory(_hostingEnvironment.ContentRootPath + "\\Attachments\\Users\\" + user_Id);
-                       string path = _hostingEnvironment.ContentRootPath + "\\Attachments\\Users\\" + user_Id + "\\" + formFile.FileName;
-                       
+                        string folder = _hostingEnvironment.ContentRootPath + "\\Attachments\\Users\\" + user_Id;
+                        Directory.CreateDirectory(folder);
+                        string path = folder + "\\" + formFile.FileName;
+
                         using (var stream = new FileStream(path, FileMode.Create))
                         {
-                           await formFile.CopyToAsync(stream);
+                            await formFile.CopyToAsync(stream);
                         }
                     }
                 }
 
             }//end of if count > 0
             return Ok("New User has been added.");
+        }
+
+        [HttpGet("GetUsersWithPage")]
+        public IActionResult GetUsersWithPage(int PageSize, int PageNumber, string SortBy, string SortDirection, string Search)
+        {
+            var response = UsersMethods.GetUsersPage(PageSize, PageNumber, SortBy, SortDirection, Search);
+            return Ok(response);
         }
 
         // GET: api/<UsersController>
