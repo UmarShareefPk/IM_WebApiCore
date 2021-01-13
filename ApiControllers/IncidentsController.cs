@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using IM.Common;
 using IM.Models;
@@ -159,78 +162,70 @@ namespace IM_Core.ApiControllers
         }
 
 
-        //[HttpGet]
-        //public Object DownloadFile(string type, string commentId, string incidentId, string filename, string contentType)
-        //{
-        //    string ContentType = contentType;
-        //    //Physical Path of Root Folder
-        //    var rootPath = "";
-        //    if (type.ToLower() == "comment")
-        //    {
-        //        rootPath = System.Web.HttpContext.Current.Server.MapPath("~/Attachments/Incidents/" + incidentId + "/Comments/" + commentId);
-        //    }
-        //    else
-        //    {
-        //        rootPath = System.Web.HttpContext.Current.Server.MapPath("~/Attachments/Incidents/" + incidentId);
-        //    }
+        [HttpGet("DownloadFile")]
+        public ActionResult DownloadFile(string type, string commentId, string incidentId, string filename, string contentType)
+        {
+            string ContentType = contentType;
+            //Physical Path of Root Folder
+            var rootPath = "";
+            if (type.ToLower() == "comment")
+            {
+                rootPath = _hostingEnvironment.ContentRootPath + "\\Attachments\\Incidents\\" + incidentId + "\\Comments\\" + commentId;
+            }
+            else
+            {
+                rootPath = _hostingEnvironment.ContentRootPath + "\\Attachments\\Incidents\\" + incidentId;
+            }
+            var fileFullPath = Path.Combine(rootPath, filename);
+
+            byte[] fileBytes = System.IO.File.ReadAllBytes(fileFullPath);
+            return File(fileBytes, ContentType, filename);
+        }
+
+        [HttpGet("DeleteFile")]
+        public string DeleteFile(string type, string commentId, string incidentId, string userId, string fileId, string filename, string contentType)
+        {
+            string ContentType = contentType;
+            //Physical Path of Root Folder
+            var rootPath = "";
+            if (type.ToLower() == "comment")
+            {
+                IncidentsMethods.DeleteFile("comment", fileId, userId);
+                rootPath = _hostingEnvironment.ContentRootPath + "\\Attachments\\Incidents\\" + incidentId + "\\Comments\\" + commentId;
+               // rootPath = System.Web.HttpContext.Current.Server.MapPath("~/Attachments/Incidents/" + incidentId + "/Comments/" + commentId);
+            }
+            else
+            {
+                IncidentsMethods.DeleteFile("incident", fileId, userId);
+                rootPath = _hostingEnvironment.ContentRootPath + "\\Attachments\\Incidents\\" + incidentId;
+                //rootPath = System.Web.HttpContext.Current.Server.MapPath("~/Attachments/Incidents/" + incidentId);
+            }
+
+            HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
+            var fileFullPath = System.IO.Path.Combine(rootPath, filename);
+
+            if (System.IO.File.Exists(@fileFullPath))
+            {
+                System.IO.File.Delete(@fileFullPath);
+            }
+            return "Fiile Delete";
+        }
 
 
-        //    HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
-        //    var fileFullPath = System.IO.Path.Combine(rootPath, filename);
+        [HttpGet("DeleteComment")]
+        public string DeleteComment(string commentId, string incidentId, string userId)
+        {
 
-        //    byte[] file = System.IO.File.ReadAllBytes(fileFullPath);
-        //    System.IO.MemoryStream ms = new System.IO.MemoryStream(file);
+            IncidentsMethods.DeleteComment(commentId, userId);
+            string path = _hostingEnvironment.ContentRootPath + "\\Attachments\\Incidents\\" + incidentId + "\\Comments\\" + commentId;
+           // string path = System.Web.HttpContext.Current.Server.MapPath("~/Attachments/Incidents/" + incidentId + "/Comments/" + commentId);
 
-        //    response.Content = new ByteArrayContent(file);
-        //    response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
-        //    //String mimeType = MimeType.GetMimeType(file); //You may do your hard coding here based on file extension
-
-        //    response.Content.Headers.ContentType = new MediaTypeHeaderValue(ContentType);// obj.DocumentName.Substring(obj.DocumentName.LastIndexOf(".") + 1, 3);
-        //    response.Content.Headers.ContentDisposition.FileName = filename;
-        //    return response;
-        //}
-
-        //[HttpGet]
-        //public string DeleteFile(string type, string commentId, string incidentId, string userId, string fileId, string filename, string contentType)
-        //{
-        //    string ContentType = contentType;
-        //    //Physical Path of Root Folder
-        //    var rootPath = "";
-        //    if (type.ToLower() == "comment")
-        //    {
-        //        IncidentsMethods.DeleteFile("comment", fileId, userId);
-        //        rootPath = System.Web.HttpContext.Current.Server.MapPath("~/Attachments/Incidents/" + incidentId + "/Comments/" + commentId);
-        //    }
-        //    else
-        //    {
-        //        IncidentsMethods.DeleteFile("incident", fileId, userId);
-        //        rootPath = System.Web.HttpContext.Current.Server.MapPath("~/Attachments/Incidents/" + incidentId);
-        //    }
-
-        //    HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
-        //    var fileFullPath = System.IO.Path.Combine(rootPath, filename);
-
-        //    if (File.Exists(@fileFullPath))
-        //    {
-        //        File.Delete(@fileFullPath);
-        //    }
-        //    return "Fiile Delete";
-        //}
-
-
-        //[HttpGet]
-        //public string DeleteComment(string commentId, string incidentId, string userId)
-        //{
-
-        //    IncidentsMethods.DeleteComment(commentId, userId);
-        //    string path = System.Web.HttpContext.Current.Server.MapPath("~/Attachments/Incidents/" + incidentId + "/Comments/" + commentId);
-
-        //    if (Directory.Exists(@path))
-        //    {
-        //        Helper.DeleteDirectory(@path);
-        //    }
-        //    return "Comment Delete";
-        //}
+            if (Directory.Exists(@path))
+            {
+                Helper.DeleteDirectory(@path);
+            }
+            return "Comment Delete";
+        }
 
 
         // GET api/<controller>/5
@@ -241,20 +236,20 @@ namespace IM_Core.ApiControllers
             return IncidentsMethods.GetAllIncidents();
         }
 
-        [HttpPost]
+        [HttpPost("UpdateIncident")]
         public void UpdateIncident([FromBody] IncidentUpdate IU) //IU = IncidentUpdate, 
         {
             IncidentsMethods.UpdateIncident(IU.IncidentId, IU.Parameter, IU.Value, IU.UserId);
         }
 
-        [HttpPost]
+        [HttpPost("UpdateComment")]
         public void UpdateComment([FromBody] Comment C)
         {
             IncidentsMethods.UpdateComment(C.Id, C.CommentText, C.UserId);
         }
 
         // [Authorize]
-        [HttpGet]
+        [HttpGet("GetIncidentsWithPage")]
         public IncidentsWithPage GetIncidentsWithPage(int PageSize, int PageNumber, string SortBy, string SortDirection, string Search)
         {
             // Thread.Sleep(7000);
