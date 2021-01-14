@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using IM.Common;
+using IM.Hubs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -37,6 +38,19 @@ namespace IM_Core
             })
              .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
+            services.AddSignalR();
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("ClientPermission", policy =>
+                {
+                    policy.AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .WithOrigins("http://localhost:3000", "http://localhost:3001")
+                        .AllowCredentials();
+                });
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -54,18 +68,21 @@ namespace IM_Core
             // app.UseAuthorization();
 
             // global cors policy
-            app.UseCors(x => x
-                .AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader());
+            //app.UseCors(x => x
+            //    .AllowAnyOrigin()
+            //    .AllowAnyMethod()
+            //    .AllowAnyHeader());
             // custom jwt auth middleware
             app.UseMiddleware<JwtMiddleware>();
+
+            app.UseCors("ClientPermission");
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Users}/{action=Index}/{id?}");
+                endpoints.MapHub<NotificationHub>("/hubs/notifications");
             });
         }
     }
