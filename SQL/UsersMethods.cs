@@ -196,6 +196,57 @@ namespace IM.SQL
                 Users = Users
             };
         }
+
+        public static List<string> GetHubIds(string incidentId)
+        {
+            var dt = new DataTable();
+            var parameters = new SortedList<string, object>()
+            {
+                 { "IncidentId" , incidentId}
+            };
+            var dbResponse = DataAccessMethods.ExecuteProcedure("GetHubIdByIncident", parameters);
+            var ds = dbResponse.Ds;
+
+
+            var hubIds = (from rw in ds.Tables[0].AsEnumerable()
+                                 select rw["HubId"].ToString()).ToList();
+
+            return hubIds;
+
+        }
+            public static List<IncidentNotification> GetUserNotifications(string userId)
+        {
+            var dt = new DataTable();
+            var parameters = new SortedList<string, object>()
+            {
+                 { "UserId" , userId}                
+            };
+
+            var dbResponse = DataAccessMethods.ExecuteProcedure("GetUserNotifications", parameters);
+            var ds = dbResponse.Ds;
+
+            if (ds == null || ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0)
+                return null;
+
+            dt = ds.Tables[0];
+     
+
+            var notifications = (from rw in dt.AsEnumerable()
+                         select new IncidentNotification()
+                         {
+                             Id = rw["Id"].ToString(),
+                             IncidentId = rw["IncidentId"].ToString(),
+                             SourceUserId = rw["SourceUserId"].ToString(),
+                             IsRead = bool.Parse(rw["IsRead"].ToString()),
+                             ReadDate = rw.IsNull("ReadDate") ? DateTime.Now :  DateTime.Parse(rw["ReadDate"].ToString()),
+                             CreateDate = DateTime.Parse(rw["CreateDate"].ToString()),
+                             UserId = rw["UserId"].ToString(),
+                             NotifyAbout = rw["NotifyAbout"].ToString()
+                         }).ToList();
+
+            return notifications;
+
+        }
     } // end of class
 
     public class UsersWithPage

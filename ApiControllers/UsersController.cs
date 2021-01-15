@@ -34,10 +34,17 @@ namespace IM_Core.ApiControllers
         }
 
         [HttpGet("AllUsers")]
-        [Authorize]
+        //[Authorize]
         public IActionResult AllUsers()
         {
             return Ok(UsersMethods.GetAllUsers());
+        }
+
+        [HttpGet("UserNotifications")]
+        //[Authorize]
+        public IActionResult UserNotifications(string userId)
+        {
+            return Ok(UsersMethods.GetUserNotifications(userId));
         }
 
 

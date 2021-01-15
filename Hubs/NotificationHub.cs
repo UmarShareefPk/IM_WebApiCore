@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
+using IM.SQL;
 
 namespace IM.Hubs
 {
@@ -20,6 +21,15 @@ namespace IM.Hubs
             Clients.Client(s).SendAsync("ReceiveMessage", message + " | " + DateTime.Now);
            //Clients.All.SendAsync("ReceiveMessage", message + " | " + DateTime.Now);
 
+        }
+
+        public void SendIncidentUpdate(string incidentId)
+        {
+            List<string> hubIds =  UsersMethods.GetHubIds(incidentId);
+            foreach(string id in hubIds)
+            {
+                Clients.Client(id).SendAsync("UpdateNotifications", incidentId);
+            }
         }
     }
 }
