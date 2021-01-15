@@ -40,6 +40,17 @@ namespace IM_Core.ApiControllers
             return Ok(UsersMethods.GetAllUsers());
         }
 
+
+        [HttpPost("UpdateHubId")]
+        //[Authorize]
+        public IActionResult UpdateHubId([FromBody] HubUpdate HU)
+        {
+            var dbResponse = UsersMethods.UpdateHubId(HU.UserId, HU.HubId);
+            if (dbResponse.Error)
+                return BadRequest(new { message = "Could not update hubId. Error : " + dbResponse.ErrorMsg});
+            return Ok();
+        }
+
         [HttpPost("AddUser")]
         public async Task<IActionResult> AddUser()
         {

@@ -74,7 +74,7 @@ namespace IM.SQL
             return userLogin;
         }
 
-            public static User GetUserById(string userId)
+        public static User GetUserById(string userId)
         {
             var dt = new DataTable();
             var parameters = new SortedList<string, object>()
@@ -103,6 +103,19 @@ namespace IM.SQL
                          }).ToList();
 
             return Users.First();
+        }
+
+        public static DbResponse UpdateHubId(string userId, string hubId)
+        {
+            var dt = new DataTable();
+            var parameters = new SortedList<string, object>()
+            {
+                  { "UserId" , userId },
+                  { "HubId" , hubId },
+            };
+
+            var dbResponse = DataAccessMethods.ExecuteProcedure("UpdateHubId", parameters);
+            return dbResponse;
         }
 
         public static List<User> GetAllUsers()
