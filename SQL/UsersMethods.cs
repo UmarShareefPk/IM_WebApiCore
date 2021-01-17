@@ -212,9 +212,21 @@ namespace IM.SQL
                                  select rw["HubId"].ToString()).ToList();
 
             return hubIds;
-
         }
-            public static List<IncidentNotification> GetUserNotifications(string userId)
+
+        public static DbResponse UpdateIsRead(string notificationId , bool isRead)
+        {
+           
+            var dt = new DataTable();
+            var parameters = new SortedList<string, object>()
+            {
+                 { "Id" , notificationId},
+                 { "IsRead" , isRead}
+            };
+            var dbResponse = DataAccessMethods.ExecuteProcedure("markReadUnread", parameters);            
+            return dbResponse;           
+        }
+        public static List<IncidentNotification> GetUserNotifications(string userId)
         {
             var dt = new DataTable();
             var parameters = new SortedList<string, object>()

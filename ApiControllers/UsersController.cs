@@ -40,6 +40,18 @@ namespace IM_Core.ApiControllers
             return Ok(UsersMethods.GetAllUsers());
         }
 
+        [HttpGet("UpdateIsRead")]
+        //[Authorize]
+        public IActionResult UpdateIsRead(string notificationId, string isRead)
+        {
+            bool isReadStatus = bool.Parse(isRead);
+            var response = UsersMethods.UpdateIsRead(notificationId, isReadStatus);
+            if (response.Error)
+                return StatusCode(500);
+            return Ok();
+        }
+
+
         [HttpGet("UserNotifications")]
         //[Authorize]
         public IActionResult UserNotifications(string userId)
