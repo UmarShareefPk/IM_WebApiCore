@@ -27,6 +27,7 @@ namespace IM_Core.ApiControllers
         }
 
         [HttpPost("AddIncident")]
+        [Authorize]
         public async Task<IActionResult> AddIncident()
         {
             Incident incident = new Incident();
@@ -109,6 +110,7 @@ namespace IM_Core.ApiControllers
 
 
         [HttpPost("AddComment")]
+        [Authorize]
         public async Task<IActionResult> AddComment()
         {
             Comment comment = new Comment();
@@ -155,6 +157,7 @@ namespace IM_Core.ApiControllers
         }
 
         [HttpGet("IncidentById")]
+        [Authorize]
         public IActionResult IncidentById(string Id)
         {
             //Thread.Sleep(500);
@@ -183,6 +186,7 @@ namespace IM_Core.ApiControllers
         }
 
         [HttpGet("DeleteFile")]
+        [Authorize]
         public string DeleteFile(string type, string commentId, string incidentId, string userId, string fileId, string filename, string contentType)
         {
             string ContentType = contentType;
@@ -213,6 +217,7 @@ namespace IM_Core.ApiControllers
 
 
         [HttpGet("DeleteComment")]
+        [Authorize]
         public string DeleteComment(string commentId, string incidentId, string userId)
         {
 
@@ -231,18 +236,21 @@ namespace IM_Core.ApiControllers
         // GET api/<controller>/5
 
         [HttpGet]
+        [Authorize]
         public List<Incident> GetAllIncidents()
         {
             return IncidentsMethods.GetAllIncidents();
         }
 
         [HttpPost("UpdateIncident")]
+        [Authorize]
         public void UpdateIncident([FromBody] IncidentUpdate IU) //IU = IncidentUpdate, 
         {
             IncidentsMethods.UpdateIncident(IU.IncidentId, IU.Parameter, IU.Value, IU.UserId);
         }
 
         [HttpPost("UpdateComment")]
+        [Authorize]
         public void UpdateComment([FromBody] Comment C)
         {
             IncidentsMethods.UpdateComment(C.Id, C.CommentText, C.UserId);
@@ -250,6 +258,7 @@ namespace IM_Core.ApiControllers
 
         // [Authorize]
         [HttpGet("GetIncidentsWithPage")]
+        [Authorize]
         public IncidentsWithPage GetIncidentsWithPage(int PageSize, int PageNumber, string SortBy, string SortDirection, string Search)
         {
             // Thread.Sleep(7000);

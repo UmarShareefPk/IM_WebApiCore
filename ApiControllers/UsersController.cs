@@ -34,14 +34,14 @@ namespace IM_Core.ApiControllers
         }
 
         [HttpGet("AllUsers")]
-        //[Authorize]
+        [Authorize]
         public IActionResult AllUsers()
         {
             return Ok(UsersMethods.GetAllUsers());
         }
 
         [HttpGet("UpdateIsRead")]
-        //[Authorize]
+        [Authorize]
         public IActionResult UpdateIsRead(string notificationId, string isRead)
         {
             bool isReadStatus = bool.Parse(isRead);
@@ -53,7 +53,7 @@ namespace IM_Core.ApiControllers
 
 
         [HttpGet("UserNotifications")]
-        //[Authorize]
+        [Authorize]
         public IActionResult UserNotifications(string userId)
         {
             return Ok(UsersMethods.GetUserNotifications(userId));
@@ -61,7 +61,7 @@ namespace IM_Core.ApiControllers
 
 
         [HttpPost("UpdateHubId")]
-        //[Authorize]
+        [Authorize]
         public IActionResult UpdateHubId([FromBody] HubUpdate HU)
         {
             var dbResponse = UsersMethods.UpdateHubId(HU.UserId, HU.HubId);
@@ -71,6 +71,7 @@ namespace IM_Core.ApiControllers
         }
 
         [HttpPost("AddUser")]
+        [Authorize]
         public async Task<IActionResult> AddUser()
         {
             User user = new User();
@@ -122,42 +123,12 @@ namespace IM_Core.ApiControllers
         }
 
         [HttpGet("GetUsersWithPage")]
+        [Authorize]
         public IActionResult GetUsersWithPage(int PageSize, int PageNumber, string SortBy, string SortDirection, string Search)
         {
             var response = UsersMethods.GetUsersPage(PageSize, PageNumber, SortBy, SortDirection, Search);
             return Ok(response);
         }
 
-        // GET: api/<UsersController>
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
-
-        // GET api/<UsersController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/<UsersController>
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
-
-        // PUT api/<UsersController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<UsersController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
     }
 }
