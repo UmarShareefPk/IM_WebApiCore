@@ -34,7 +34,7 @@ namespace IM_Core.ApiControllers
         }
 
         [HttpGet("AllUsers")]
-        [Authorize]
+       // [Authorize]
         public IActionResult AllUsers()
         {
             return Ok(UsersMethods.GetAllUsers());

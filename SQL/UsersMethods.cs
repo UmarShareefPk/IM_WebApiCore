@@ -33,14 +33,14 @@ namespace IM.SQL
 
             if (ds == null || ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0)
                 return null;
-           
-            loginTable   = ds.Tables[0];
+
+            loginTable = ds.Tables[0];
             userTable = ds.Tables[1];
 
             var Users = (from rw in userTable.AsEnumerable()
                          select new User()
                          {
-                             Id = rw["Id"].ToString(),                            
+                             Id = rw["Id"].ToString(),
                              CreateDate = DateTime.Parse(rw["CreateDate"].ToString()),
                              FirstName = rw["FirstName"].ToString(),
                              LastName = rw["LastName"].ToString(),
@@ -51,26 +51,26 @@ namespace IM.SQL
 
 
             var userLogin = (from rw in loginTable.AsEnumerable()
-                         select new UserLogin()
-                         {
-                             Id = rw["Id"].ToString(),
-                             user = Users.First(),
-                             Username = rw["Username"].ToString(),
-                             Password = rw["Password"].ToString(),
-                             CreateDate = DateTime.Parse(rw["CreateDate"].ToString()),
-                             LastLogin = DateTime.Now // DateTime.Parse(rw["LastLogin"].ToString())
-                         }).ToList();
+                             select new UserLogin()
+                             {
+                                 Id = rw["Id"].ToString(),
+                                 user = Users.First(),
+                                 Username = rw["Username"].ToString(),
+                                 Password = rw["Password"].ToString(),
+                                 CreateDate = DateTime.Parse(rw["CreateDate"].ToString()),
+                                 LastLogin = DateTime.Now // DateTime.Parse(rw["LastLogin"].ToString())
+                             }).ToList();
 
             return userLogin.First();
         }
 
-        public static UserLogin Authenticate (AuthenticateRequest model)
+        public static UserLogin Authenticate(AuthenticateRequest model)
         {
             var userLogin = Login(model.Username, model.Password);
             // authentication successful so generate jwt token
-            if(userLogin != null)
+            if (userLogin != null)
                 userLogin.Token = JWT.generateJwtToken(userLogin, "This is very secret.");
-            
+
             return userLogin;
         }
 
@@ -79,7 +79,7 @@ namespace IM.SQL
             var dt = new DataTable();
             var parameters = new SortedList<string, object>()
             {
-                  { "UserId" , userId },                 
+                  { "UserId" , userId },
             };
 
             var dbResponse = DataAccessMethods.ExecuteProcedure("UserById", parameters);
@@ -93,7 +93,7 @@ namespace IM.SQL
             var Users = (from rw in dt.AsEnumerable()
                          select new User()
                          {
-                             Id = rw["Id"].ToString(),                            
+                             Id = rw["Id"].ToString(),
                              CreateDate = DateTime.Parse(rw["CreateDate"].ToString()),
                              FirstName = rw["FirstName"].ToString(),
                              LastName = rw["LastName"].ToString(),
@@ -122,9 +122,25 @@ namespace IM.SQL
         {
             var dt = new DataTable();
             var parameters = new SortedList<string, object>()
-            {   };
+            { };
 
             var dbResponse = DataAccessMethods.ExecuteProcedure("GetAllUsers", parameters);
+            if(dbResponse.Error)
+            {
+                var users = new List<User>();
+                users.Add(new User
+                                {
+                                    Id= dbResponse.ErrorMsg,
+                                    CreateDate = DateTime.Now,
+                                    FirstName = dbResponse.ErrorMsg,
+                                    LastName = dbResponse.ErrorMsg,
+                                    ProfilePic = dbResponse.ErrorMsg,
+                                    Email = dbResponse.ErrorMsg,
+                                    Phone = dbResponse.ErrorMsg,
+                                }
+                );
+                return users;
+            }
 
             dt = dbResponse.Ds.Tables[0];
 
@@ -146,12 +162,12 @@ namespace IM.SQL
         public static DbResponse AddUser(User user)
         {
             var parameters = new SortedList<string, object>()
-            {                
+            {
                   { "FirstName" , user.FirstName },
                   { "LastName" , user.LastName },
                   { "Email" , user.Email },
                   { "ProfilePic" , user.ProfilePic },
-                  { "Phone" , user.Phone }                 
+                  { "Phone" , user.Phone }
             };
 
             return DataAccessMethods.ExecuteProcedure("AddNewUser", parameters);
@@ -179,16 +195,16 @@ namespace IM.SQL
             int Total_Users = int.Parse(ds.Tables[0].Rows[0][0].ToString());
 
             var Users = (from rw in dt.AsEnumerable()
-                             select new User()
-                             {
-                                 Id = rw["Id"].ToString(),
-                                 CreateDate = DateTime.Parse(rw["CreateDate"].ToString()),
-                                 FirstName = rw["FirstName"].ToString(),
-                                 LastName = rw["LastName"].ToString(),
-                                 ProfilePic = rw["ProfilePic"].ToString(),
-                                 Email = rw["Email"].ToString(),
-                                 Phone = rw["Phone"].ToString(),
-                             }).ToList();
+                         select new User()
+                         {
+                             Id = rw["Id"].ToString(),
+                             CreateDate = DateTime.Parse(rw["CreateDate"].ToString()),
+                             FirstName = rw["FirstName"].ToString(),
+                             LastName = rw["LastName"].ToString(),
+                             ProfilePic = rw["ProfilePic"].ToString(),
+                             Email = rw["Email"].ToString(),
+                             Phone = rw["Phone"].ToString(),
+                         }).ToList();
 
             return new UsersWithPage
             {
@@ -197,7 +213,7 @@ namespace IM.SQL
             };
         }
 
-        public static List<string> GetHubIds(string incidentId)
+        public static List<string> GetHubIds(string incidentId, string userId)
         {
             var dt = new DataTable();
             var parameters = new SortedList<string, object>()
@@ -207,8 +223,11 @@ namespace IM.SQL
             var dbResponse = DataAccessMethods.ExecuteProcedure("GetHubIdByIncident", parameters);
             var ds = dbResponse.Ds;
 
+            if (ds == null || ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0 )
+                return new List<string>();
 
             var hubIds = (from rw in ds.Tables[0].AsEnumerable()
+                          where rw["userId"].ToString() != userId
                                  select rw["HubId"].ToString()).ToList();
 
             return hubIds;

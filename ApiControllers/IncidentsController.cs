@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading;
 using System.Threading.Tasks;
 using IM.Common;
 using IM.Models;
@@ -160,7 +161,7 @@ namespace IM_Core.ApiControllers
         [Authorize]
         public IActionResult IncidentById(string Id)
         {
-            //Thread.Sleep(500);
+            //Thread.Sleep(2000);
             return Ok(IncidentsMethods.GetIncidentrById(Id));
         }
 
@@ -220,10 +221,8 @@ namespace IM_Core.ApiControllers
         [Authorize]
         public string DeleteComment(string commentId, string incidentId, string userId)
         {
-
             IncidentsMethods.DeleteComment(commentId, userId);
             string path = _hostingEnvironment.ContentRootPath + "\\Attachments\\Incidents\\" + incidentId + "\\Comments\\" + commentId;
-           // string path = System.Web.HttpContext.Current.Server.MapPath("~/Attachments/Incidents/" + incidentId + "/Comments/" + commentId);
 
             if (Directory.Exists(@path))
             {
@@ -256,14 +255,57 @@ namespace IM_Core.ApiControllers
             IncidentsMethods.UpdateComment(C.Id, C.CommentText, C.UserId);
         }
 
-        // [Authorize]
-        [HttpGet("GetIncidentsWithPage")]
-        [Authorize]
+         [Authorize]
+        [HttpGet("GetIncidentsWithPage")]        
         public IncidentsWithPage GetIncidentsWithPage(int PageSize, int PageNumber, string SortBy, string SortDirection, string Search)
         {
-            // Thread.Sleep(7000);
+             //Thread.Sleep(000);
             return IncidentsMethods.GetIncidentsPage(PageSize, PageNumber, SortBy, SortDirection, Search);
         }
+
+        [HttpGet("GetIncidentsWithPageTest")]
+        public object GetIncidentsWithPageTest(int PageSize, int PageNumber, string SortBy, string SortDirection, string Search)
+        {
+            //Thread.Sleep(000);
+            return IncidentsMethods.GetIncidentsPageTest(PageSize, PageNumber, SortBy, SortDirection, Search);
+        }
+
+        [Authorize]
+        [HttpGet("KPI")]       
+        public object GetKPI(string UserId)
+        {            
+            return IncidentsMethods.KPI(UserId);
+        }
+
+        [Authorize]
+        [HttpGet("OverallWidget")]
+        public object GetOverallWidget (string UserId)
+        {            
+            return IncidentsMethods.OverallWidget();
+        }
+
+        [Authorize]
+        [HttpGet("Last5Incidents")]
+        public object GetLast5Incidents(string UserId)
+        {
+            return IncidentsMethods.Last5Incidents();
+        }
+
+        [Authorize]
+        [HttpGet("Oldest5UnresolvedIncidents")]
+        public object GetOldest5UnresolvedIncidents(string UserId)
+        {
+            return IncidentsMethods.Oldest5UnresolvedIncidents();
+        }
+
+        [Authorize]
+        [HttpGet("MostAssignedToUsersIncidents")]
+        public object GetMostAssignedToUsersIncidents(string UserId)
+        {
+            return IncidentsMethods.MostAssignedToUsersIncidents();
+        }
+
+
 
         // GET: api/<IncidentsController>
         [HttpGet]

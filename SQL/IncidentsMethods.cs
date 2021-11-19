@@ -255,11 +255,11 @@ namespace IM.SQL
                 return;
         }
 
-            public static List<Incident> GetAllIncidents()
-             {
+        public static List<Incident> GetAllIncidents()
+        {
             var dt = new DataTable();
             var parameters = new SortedList<string, object>()
-            {                 
+            {
             };
 
             var dbResponse = DataAccessMethods.ExecuteProcedure("GetAllIncidents", parameters);
@@ -279,7 +279,7 @@ namespace IM.SQL
                                  CreatedAT = DateTime.Parse(rw["CreatedAT"].ToString()),
                                  Title = rw["Title"].ToString(),
                                  Description = rw["Description"].ToString(),
-                                 AdditionalData = rw["AdditionalData"].ToString(),                                 
+                                 AdditionalData = rw["AdditionalData"].ToString(),
                                  StartTime = DateTime.Parse(rw["StartTime"].ToString()),
                                  DueDate = DateTime.Parse(rw["DueDate"].ToString()),
                                  Status = rw["Status"].ToString()
@@ -333,6 +333,52 @@ namespace IM.SQL
             };
         }
 
+        public static object GetIncidentsPageTest(int pageSize, int pageNumber, string sortBy, string sortDirection, string Serach)
+        {
+            var dt = new DataTable();
+            var parameters = new SortedList<string, object>()
+            {
+                 { "PageSize" , pageSize},
+                 { "PageNumber" , pageNumber},
+                 { "SortBy" , sortBy},
+                 { "SortDirection" , sortDirection},
+                 { "SearchText" , Serach},
+            };
+
+            var dbResponse = DataAccessMethods.ExecuteProcedure("GetIncidentsPage", parameters);
+            var ds = dbResponse.Ds;
+
+            if (dbResponse.Error)
+                return dbResponse.ErrorMsg;
+
+            if (ds == null || ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0)
+                return null;
+
+            dt = ds.Tables[1];
+            int total_incidents = int.Parse(ds.Tables[0].Rows[0][0].ToString());
+
+            var incidents = (from rw in dt.AsEnumerable()
+                             select new Incident()
+                             {
+                                 Id = rw["Id"].ToString(),
+                                 CreatedBy = rw["CreatedBy"].ToString(),
+                                 AssignedTo = rw["AssignedTo"].ToString(),
+                                 CreatedAT = DateTime.Parse(rw["CreatedAT"].ToString()),
+                                 Title = rw["Title"].ToString(),
+                                 Description = rw["Description"].ToString(),
+                                 AdditionalData = rw["AdditionalData"].ToString(),
+                                 StartTime = DateTime.Parse(rw["StartTime"].ToString()),
+                                 DueDate = DateTime.Parse(rw["DueDate"].ToString()),
+                                 Status = rw["Status"].ToString()
+                             }).ToList();
+
+            return new IncidentsWithPage
+            {
+                Total_Incidents = total_incidents,
+                Incidents = incidents
+            };
+        }
+
         public static DbResponse UpdateIncident(string incidentId , string parameter , string value , string userId)
         {
             var dt = new DataTable();
@@ -359,6 +405,139 @@ namespace IM.SQL
 
             return DataAccessMethods.ExecuteProcedure("UpdateComment", parameters);
         }
+
+        /////////////////////////////////////// Dashboard //////////////////////
+        public static object KPI(string userId)
+        {
+            var dt = new DataTable();
+            var parameters = new SortedList<string, object>()
+            {
+                 { "UserId" , userId}
+            };
+
+            var dbResponse =  DataAccessMethods.ExecuteProcedure("GetKPI", parameters);
+            var data = dbResponse.Ds.Tables[0].Rows[0];
+
+            return new
+            {
+                New = data["New"],
+                InProgress = data["InProgress"],
+                Closed = data["Closed"],
+                Approved = data["Approved"],
+                Late = data["Late"],
+                AssignedToMe = data["AssignedToMe"]
+
+            };
+        }
+
+        public static object OverallWidget()
+        {
+            var dt = new DataTable();
+            var parameters = new SortedList<string, object>()
+            {                 
+            };
+
+            var dbResponse = DataAccessMethods.ExecuteProcedure("GetOverallWidget", parameters);
+            var data = dbResponse.Ds.Tables[0].Rows[0];
+
+            return new
+            {
+                New = data["New"],
+                InProgress = data["InProgress"],
+                Closed = data["Closed"],
+                Approved = data["Approved"],
+                Late = data["Late"]      
+            };
+        }
+
+        public static List<Incident> Last5Incidents()
+        {
+            var dt = new DataTable();
+            var parameters = new SortedList<string, object>()
+            {
+            };
+
+            var dbResponse = DataAccessMethods.ExecuteProcedure("GetLast5Incidents", parameters);
+            var ds = dbResponse.Ds;
+
+            if (ds == null || ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0)
+                return null;
+
+            dt = ds.Tables[0];
+
+            var incidents = (from rw in dt.AsEnumerable()
+                             select new Incident()
+                             {
+                                 Id = rw["Id"].ToString(),
+                                 CreatedBy = rw["CreatedBy"].ToString(),
+                                 AssignedTo = rw["AssignedTo"].ToString(),
+                                 CreatedAT = DateTime.Parse(rw["CreatedAT"].ToString()),
+                                 Title = rw["Title"].ToString(),
+                                 Description = rw["Description"].ToString(),
+                                 AdditionalData = rw["AdditionalData"].ToString(),
+                                 StartTime = DateTime.Parse(rw["StartTime"].ToString()),
+                                 DueDate = DateTime.Parse(rw["DueDate"].ToString()),
+                                 Status = rw["Status"].ToString()
+                             }).ToList();
+
+            return incidents;
+        }
+
+        public static List<Incident> Oldest5UnresolvedIncidents()
+        {
+            var dt = new DataTable();
+            var parameters = new SortedList<string, object>()
+            {
+            };
+
+            var dbResponse = DataAccessMethods.ExecuteProcedure("GetOldest5UnresolvedIncidents", parameters);
+            var ds = dbResponse.Ds;
+
+            if (ds == null || ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0)
+                return null;
+
+            dt = ds.Tables[0];
+
+            var incidents = (from rw in dt.AsEnumerable()
+                             select new Incident()
+                             {
+                                 Id = rw["Id"].ToString(),
+                                 CreatedBy = rw["CreatedBy"].ToString(),
+                                 AssignedTo = rw["AssignedTo"].ToString(),
+                                 CreatedAT = DateTime.Parse(rw["CreatedAT"].ToString()),
+                                 Title = rw["Title"].ToString(),
+                                 Description = rw["Description"].ToString(),
+                                 AdditionalData = rw["AdditionalData"].ToString(),
+                                 StartTime = DateTime.Parse(rw["StartTime"].ToString()),
+                                 DueDate = DateTime.Parse(rw["DueDate"].ToString()),
+                                 Status = rw["Status"].ToString()
+                             }).ToList();
+
+            return incidents;
+        }
+
+
+        public static object MostAssignedToUsersIncidents()
+        {
+            var dt = new DataTable();
+            var parameters = new SortedList<string, object>()
+            {
+            };
+
+            var dbResponse = DataAccessMethods.ExecuteProcedure("GetMostAssignedToUsersIncidents", parameters);
+            var data = dbResponse.Ds.Tables[0];
+
+            return (from rw in data.AsEnumerable()
+                    select new 
+                    {
+                        UserId = rw["UserId"].ToString(),
+                        Name = rw["Name"].ToString(),
+                        Count = rw["Count"].ToString()                       
+                    }).ToList();
+        }
+
+
+        ///////////////////////////////////////End Dashboard //////////////////////
 
     }// end class
 

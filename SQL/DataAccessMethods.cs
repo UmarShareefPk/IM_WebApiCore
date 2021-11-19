@@ -21,7 +21,8 @@ namespace IM.SQL
         {
             var ds = new DataSet();
             //var con = new SqlConnection(ConfigurationManager.ConnectionStrings["IMConString"].ConnectionString);
-            var con = new SqlConnection("data source=localhost;initial catalog=IM;persist security info=True; Integrated Security=SSPI;");
+            //var con = new SqlConnection("data source=localhost;initial catalog=IM;persist security info=True; Integrated Security=SSPI;");
+            var con = new SqlConnection("Server=localhost;Database=IM;User Id=sa;Password=pioneer007;");
             var cmd = con.CreateCommand();
             cmd.CommandText = procedureName;
             cmd.CommandType = CommandType.StoredProcedure;

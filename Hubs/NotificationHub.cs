@@ -23,9 +23,9 @@ namespace IM.Hubs
 
         }
 
-        public void SendIncidentUpdate(string incidentId)
+        public void SendIncidentUpdate(string incidentId , string userId)
         {
-            List<string> hubIds =  UsersMethods.GetHubIds(incidentId);
+            List<string> hubIds =  UsersMethods.GetHubIds(incidentId , userId);
             foreach(string id in hubIds)
             {
                 Clients.Client(id).SendAsync("UpdateNotifications", incidentId);
