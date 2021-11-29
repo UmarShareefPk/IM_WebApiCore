@@ -14,6 +14,8 @@ namespace IM.Models
         public string ProfilePic { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
+        public string HubId { get; set; }
+
 
     }
 }
