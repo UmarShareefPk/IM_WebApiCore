@@ -154,6 +154,7 @@ namespace IM.SQL
                              ProfilePic = rw["ProfilePic"].ToString(),
                              Email = rw["Email"].ToString(),
                              Phone = rw["Phone"].ToString(),
+                             HubId = rw["HubId"].ToString(),
                          }).ToList();
 
             return Users;
