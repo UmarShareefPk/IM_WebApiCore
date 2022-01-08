@@ -11,6 +11,7 @@ namespace IM_Core.Models
         public DateTime Date { get; set; }
         public string Status { get; set; }
         public bool Deleted { get; set; }
+        public string ConversationId { get; set; }
 
     }
 }

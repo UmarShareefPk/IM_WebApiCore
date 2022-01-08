@@ -31,13 +31,13 @@ namespace IM_Core.ApiControllers
         public async Task<IActionResult> AddMessage()
         {
 
-            //string From = HttpContext.Request.Form["From"];
-            //string To = HttpContext.Request.Form["To"];
-            //string MessageText = HttpContext.Request.Form["MessageText"];
+            string From = HttpContext.Request.Form["From"];
+            string To = HttpContext.Request.Form["To"];
+            string MessageText = HttpContext.Request.Form["MessageText"];
 
-            string From = "16819E79-25A3-46C9-8B1F-8FB6C6F8AC61";
-            string To = "BF041A9D-B923-4A89-9E5A-11E59808A617";
-            string MessageText = "One year today. Those who were lucky enough to know my father knew him as the personification of extraordinary integrity,";
+            //string From = "16819E79-25A3-46C9-8B1F-8FB6C6F8AC61";
+            //string To = "BF041A9D-B923-4A89-9E5A-11E59808A617";
+            //string MessageText = "One year today. Those who were lucky enough to know my father knew him as the personification of extraordinary integrity,";
 
             DateTime dt = new DateTime();
             if ( string.IsNullOrWhiteSpace(From) || string.IsNullOrWhiteSpace(To) || string.IsNullOrWhiteSpace(MessageText) 
@@ -58,6 +58,39 @@ namespace IM_Core.ApiControllers
             return Ok(message);
         }
 
+
+
+        [HttpGet("ConversationsByUser")]
+        [Authorize]
+        public async Task<IActionResult> GetConversationsByUser(string UserId)
+        {
+            var result =  MessagesMethods.GetConversationsByUser(UserId);
+
+            if (result.GetType() == typeof(DbResponse))
+            {
+                var error = (DbResponse)result;
+                return StatusCode(500, new { message = error.ErrorMsg });
+            }
+
+
+            return Ok(result);
+        }
+
+        [HttpGet("MessagesByConversations")]
+        [Authorize]
+        public async Task<IActionResult> GetMessagesByConversations(string ConversationId)
+        {
+            var result = MessagesMethods.GetMessagesByConversations(ConversationId);
+
+            if (result.GetType() == typeof(DbResponse))
+            {
+                var error = (DbResponse)result;
+                return StatusCode(500, new { message = error.ErrorMsg });
+            }
+
+
+            return Ok(result);
+        }
 
         [HttpGet("MessagesByUser")]
         [Authorize]
