@@ -91,7 +91,7 @@ namespace IM_Core
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Users}/{action=Index}/{id?}");
-                endpoints.MapHub<NotificationHub>("/hubs/notifications");
+                endpoints.MapHub<NotificationHub>("/hubs/notifications");              
             });
         }
     }

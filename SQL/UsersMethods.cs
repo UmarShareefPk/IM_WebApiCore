@@ -234,6 +234,24 @@ namespace IM.SQL
             return hubIds;
         }
 
+        public static string GetHubIdByUserId(string userId)
+        {
+            var dt = new DataTable();
+            var parameters = new SortedList<string, object>()
+            {
+                 { "IncidentId" , userId}
+            };
+            var dbResponse = DataAccessMethods.ExecuteProcedure("GetHubIdByUserId", parameters);
+            var ds = dbResponse.Ds;
+
+            if (ds == null || ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0)
+                return null;
+
+
+            return ds.Tables[0].Rows[0][0].ToString();
+        }
+
+
         public static DbResponse UpdateIsRead(string notificationId , bool isRead)
         {
            

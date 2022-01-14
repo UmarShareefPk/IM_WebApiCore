@@ -31,5 +31,15 @@ namespace IM.Hubs
                 Clients.Client(id).SendAsync("UpdateNotifications", incidentId);
             }
         }
+
+
+        public void SendMessage(string conversationId, string userId)
+        {
+            string hubId = UsersMethods.GetHubIdByUserId(userId);
+
+            Clients.Client(hubId).SendAsync("UpdateConversation", conversationId);
+
+        }
+
     }
 }
