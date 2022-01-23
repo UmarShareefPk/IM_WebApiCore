@@ -60,7 +60,8 @@ namespace IM.SQL
                         User1 = rw["User1"].ToString(),
                         User2 = rw["User2"].ToString(),
                         LastMessageTime = DateTime.Parse(rw["LastMessageTime"].ToString()),
-                        LastMessage = rw["LastMessage"].ToString(),                       
+                        LastMessage = rw["LastMessage"].ToString(),   
+                        UnReadCount = int.Parse(rw["UnreadCount"].ToString())
                     }).ToList();
         }
 

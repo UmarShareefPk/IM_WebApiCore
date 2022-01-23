@@ -9,6 +9,7 @@ namespace IM_Core.Models
         public string User2 { get; set; }
         public DateTime LastMessageTime { get; set; }
         public string LastMessage { get; set; }
-        
+        public int UnReadCount { get; set; }
+
     }
 }
