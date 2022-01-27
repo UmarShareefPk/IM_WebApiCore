@@ -16,24 +16,26 @@ namespace IM.Common
     {
         private readonly RequestDelegate _next;
         private readonly AppSettings _appSettings;
+        private readonly UsersMethods _usersMethods;
 
         public JwtMiddleware(RequestDelegate next, IOptions<AppSettings> appSettings)
         {
             _next = next;
             _appSettings = appSettings.Value;
+           // _usersMethods = usersMethods;
         }
 
-        public async Task Invoke(HttpContext context)
+        public async Task Invoke(HttpContext context, UsersMethods usersMethods)
         {
             var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
 
             if (token != null)
-                attachUserToContext(context, token);
+                attachUserToContext(context, token, usersMethods);
 
             await _next(context);
         }
 
-        private void attachUserToContext(HttpContext context, string token)
+        private void attachUserToContext(HttpContext context, string token, UsersMethods usersMethods)
         {
             try
             {
@@ -53,7 +55,7 @@ namespace IM.Common
                 var userId = jwtToken.Claims.First(x => x.Type == "id").Value;
 
                 // attach user to context on successful jwt validation
-                context.Items["User"] = UsersMethods.GetUserById(userId);
+                context.Items["User"] = usersMethods.GetUserById(userId);
             }
             catch
             {

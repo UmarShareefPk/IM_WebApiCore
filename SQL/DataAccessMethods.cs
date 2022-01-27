@@ -5,7 +5,8 @@ using System.Data;
 using System.Linq;
 using System.Web;
 using Microsoft.Data.SqlClient;
-
+using WebApi.Options;
+using Microsoft.Extensions.Options;
 
 namespace IM.SQL
 {
@@ -17,12 +18,19 @@ namespace IM.SQL
     }
     public class DataAccessMethods
     {
-        public static DbResponse ExecuteProcedure(string procedureName, SortedList<string, object> parameters)
+        private readonly  ConnectionStringOptions _connectionString;
+
+        public DataAccessMethods(IOptionsSnapshot<ConnectionStringOptions> connectionStringOptions)
         {
+            _connectionString = connectionStringOptions.Value;
+
+        }
+        public DbResponse ExecuteProcedure(string procedureName, SortedList<string, object> parameters)
+        {          
             var ds = new DataSet();
             //var con = new SqlConnection(ConfigurationManager.ConnectionStrings["IMConString"].ConnectionString);
             //var con = new SqlConnection("data source=localhost;initial catalog=IM;persist security info=True; Integrated Security=SSPI;");
-            var con = new SqlConnection("Server=localhost;Database=IM;User Id=sa;Password=pioneer007;");
+            var con = new SqlConnection(_connectionString.Main);
             var cmd = con.CreateCommand();
             cmd.CommandText = procedureName;
             cmd.CommandType = CommandType.StoredProcedure;

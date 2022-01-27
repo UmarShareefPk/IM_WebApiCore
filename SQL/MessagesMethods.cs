@@ -12,8 +12,13 @@ namespace IM.SQL
 {
     public class MessagesMethods
     {
-           
-        public static object AddMessage(string From, string To, string MessageText)
+        private readonly DataAccessMethods dbAccess;
+
+        public MessagesMethods(DataAccessMethods dataAccessMethods)
+        {
+            dbAccess = dataAccessMethods;
+        }
+        public object AddMessage(string From, string To, string MessageText)
         {
             var parameters = new SortedList<string, object>()
             {
@@ -22,7 +27,7 @@ namespace IM.SQL
                   { "MessageText" , MessageText },                
             };
 
-            var dbResponse =  DataAccessMethods.ExecuteProcedure("AddMessage", parameters);
+            var dbResponse = dbAccess.ExecuteProcedure("AddMessage", parameters);
 
             if (dbResponse.Error)
                 return dbResponse;
@@ -41,14 +46,14 @@ namespace IM.SQL
         }
 
 
-        public static object GetConversationsByUser(string UserId)
+        public object GetConversationsByUser(string UserId)
         {
             var parameters = new SortedList<string, object>()
             {
                   { "UserId" , UserId },
             };
 
-            var dbResponse = DataAccessMethods.ExecuteProcedure("GetConversationsByUser", parameters);
+            var dbResponse = dbAccess.ExecuteProcedure("GetConversationsByUser", parameters);
 
             if (dbResponse.Error)
                 return dbResponse;
@@ -65,14 +70,14 @@ namespace IM.SQL
                     }).ToList();
         }
 
-        public static object GetMessagesByConversations(string ConversationId)
+        public object GetMessagesByConversations(string ConversationId)
         {
             var parameters = new SortedList<string, object>()
             {
                   { "ConversationId" , ConversationId },
             };
 
-            var dbResponse = DataAccessMethods.ExecuteProcedure("GetMessagesByConversation", parameters);
+            var dbResponse = dbAccess.ExecuteProcedure("GetMessagesByConversation", parameters);
 
             if (dbResponse.Error)
                 return dbResponse;
@@ -91,14 +96,14 @@ namespace IM.SQL
                     }).ToList();
         }
 
-        public static object GetMessagesByUser(string UserId)
+        public object GetMessagesByUser(string UserId)
         {
             var parameters = new SortedList<string, object>()
             {
                   { "UserId" , UserId },
             };
 
-            var dbResponse = DataAccessMethods.ExecuteProcedure("GetMessagesByUser", parameters);
+            var dbResponse = dbAccess.ExecuteProcedure("GetMessagesByUser", parameters);
 
             if (dbResponse.Error)
                 return dbResponse;

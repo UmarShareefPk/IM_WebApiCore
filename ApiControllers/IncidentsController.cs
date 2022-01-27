@@ -22,9 +22,11 @@ namespace IM_Core.ApiControllers
     public class IncidentsController : ControllerBase
     {
         private readonly IHostingEnvironment _hostingEnvironment;
-        public IncidentsController(IHostingEnvironment hostingEnvironment)
+        private readonly IncidentsMethods _incidentsMethods;
+        public IncidentsController(IHostingEnvironment hostingEnvironment, IncidentsMethods incidentsMethods)
         {
             _hostingEnvironment = hostingEnvironment;
+            _incidentsMethods = incidentsMethods;
         }
 
         [HttpPost("AddIncident")]
@@ -66,7 +68,7 @@ namespace IM_Core.ApiControllers
             if (!statusValidValues.Contains(incident.Status.ToUpper()))
                 return BadRequest(new { message = "Invalid Status Value. Valid values are N,O,I,C,A" });           
 
-            var dbResponse = IncidentsMethods.AddIncident(incident);
+            var dbResponse = _incidentsMethods.AddIncident(incident);
 
             if (dbResponse.Error)
             {
@@ -100,7 +102,7 @@ namespace IM_Core.ApiControllers
                         {
                             await formFile.CopyToAsync(stream);
                         }
-                        IncidentsMethods.AddIncidentAttachments(attachment);
+                        _incidentsMethods.AddIncidentAttachments(attachment);
                     }
                 }
 
@@ -125,7 +127,7 @@ namespace IM_Core.ApiControllers
             {
                 return BadRequest(new { message = "Please enter all required fields." });                
             }
-            var dbResponse = IncidentsMethods.AddComment(comment);
+            var dbResponse = _incidentsMethods.AddComment(comment);
 
             string comment_Id = dbResponse.Ds.Tables[0].Rows[0][0].ToString();
 
@@ -148,12 +150,12 @@ namespace IM_Core.ApiControllers
                         {
                             await formFile.CopyToAsync(stream);
                         }
-                        IncidentsMethods.AddCommentAttachments(attachment);
+                        _incidentsMethods.AddCommentAttachments(attachment);
                     }
                 }
             }//end of if count > 0
 
-            var newComment = IncidentsMethods.GetCommentById(comment_Id);
+            var newComment = _incidentsMethods.GetCommentById(comment_Id);
             return Ok(newComment);
         }
 
@@ -162,7 +164,7 @@ namespace IM_Core.ApiControllers
         public IActionResult IncidentById(string Id)
         {
             //Thread.Sleep(2000);
-            return Ok(IncidentsMethods.GetIncidentrById(Id));
+            return Ok(_incidentsMethods.GetIncidentrById(Id));
         }
 
 
@@ -195,13 +197,13 @@ namespace IM_Core.ApiControllers
             var rootPath = "";
             if (type.ToLower() == "comment")
             {
-                IncidentsMethods.DeleteFile("comment", fileId, userId);
+                _incidentsMethods.DeleteFile("comment", fileId, userId);
                 rootPath = _hostingEnvironment.ContentRootPath + "\\Attachments\\Incidents\\" + incidentId + "\\Comments\\" + commentId;
                // rootPath = System.Web.HttpContext.Current.Server.MapPath("~/Attachments/Incidents/" + incidentId + "/Comments/" + commentId);
             }
             else
             {
-                IncidentsMethods.DeleteFile("incident", fileId, userId);
+                _incidentsMethods.DeleteFile("incident", fileId, userId);
                 rootPath = _hostingEnvironment.ContentRootPath + "\\Attachments\\Incidents\\" + incidentId;
                 //rootPath = System.Web.HttpContext.Current.Server.MapPath("~/Attachments/Incidents/" + incidentId);
             }
@@ -221,7 +223,7 @@ namespace IM_Core.ApiControllers
         [Authorize]
         public string DeleteComment(string commentId, string incidentId, string userId)
         {
-            IncidentsMethods.DeleteComment(commentId, userId);
+            _incidentsMethods.DeleteComment(commentId, userId);
             string path = _hostingEnvironment.ContentRootPath + "\\Attachments\\Incidents\\" + incidentId + "\\Comments\\" + commentId;
 
             if (Directory.Exists(@path))
@@ -238,21 +240,21 @@ namespace IM_Core.ApiControllers
         [Authorize]
         public List<Incident> GetAllIncidents()
         {
-            return IncidentsMethods.GetAllIncidents();
+            return _incidentsMethods.GetAllIncidents();
         }
 
         [HttpPost("UpdateIncident")]
         [Authorize]
         public void UpdateIncident([FromBody] IncidentUpdate IU) //IU = IncidentUpdate, 
         {
-            IncidentsMethods.UpdateIncident(IU.IncidentId, IU.Parameter, IU.Value, IU.UserId);
+            _incidentsMethods.UpdateIncident(IU.IncidentId, IU.Parameter, IU.Value, IU.UserId);
         }
 
         [HttpPost("UpdateComment")]
         [Authorize]
         public void UpdateComment([FromBody] Comment C)
         {
-            IncidentsMethods.UpdateComment(C.Id, C.CommentText, C.UserId);
+            _incidentsMethods.UpdateComment(C.Id, C.CommentText, C.UserId);
         }
 
          [Authorize]
@@ -260,49 +262,49 @@ namespace IM_Core.ApiControllers
         public IncidentsWithPage GetIncidentsWithPage(int PageSize, int PageNumber, string SortBy, string SortDirection, string Search)
         {
              //Thread.Sleep(000);
-            return IncidentsMethods.GetIncidentsPage(PageSize, PageNumber, SortBy, SortDirection, Search);
+            return _incidentsMethods.GetIncidentsPage(PageSize, PageNumber, SortBy, SortDirection, Search);
         }
 
         [HttpGet("GetIncidentsWithPageTest")]
         public object GetIncidentsWithPageTest(int PageSize, int PageNumber, string SortBy, string SortDirection, string Search)
         {
             //Thread.Sleep(000);
-            return IncidentsMethods.GetIncidentsPageTest(PageSize, PageNumber, SortBy, SortDirection, Search);
+            return _incidentsMethods.GetIncidentsPageTest(PageSize, PageNumber, SortBy, SortDirection, Search);
         }
 
         [Authorize]
         [HttpGet("KPI")]       
         public object GetKPI(string UserId)
         {            
-            return IncidentsMethods.KPI(UserId);
+            return _incidentsMethods.KPI(UserId);
         }
 
         [Authorize]
         [HttpGet("OverallWidget")]
         public object GetOverallWidget (string UserId)
         {            
-            return IncidentsMethods.OverallWidget();
+            return _incidentsMethods.OverallWidget();
         }
 
         [Authorize]
         [HttpGet("Last5Incidents")]
         public object GetLast5Incidents(string UserId)
         {
-            return IncidentsMethods.Last5Incidents();
+            return _incidentsMethods.Last5Incidents();
         }
 
         [Authorize]
         [HttpGet("Oldest5UnresolvedIncidents")]
         public object GetOldest5UnresolvedIncidents(string UserId)
         {
-            return IncidentsMethods.Oldest5UnresolvedIncidents();
+            return _incidentsMethods.Oldest5UnresolvedIncidents();
         }
 
         [Authorize]
         [HttpGet("MostAssignedToUsersIncidents")]
         public object GetMostAssignedToUsersIncidents(string UserId)
         {
-            return IncidentsMethods.MostAssignedToUsersIncidents();
+            return _incidentsMethods.MostAssignedToUsersIncidents();
         }
 
 

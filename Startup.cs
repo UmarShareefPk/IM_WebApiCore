@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using IM.Common;
 using IM.Hubs;
+using IM.SQL;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -13,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Serialization;
+using WebApi.Options;
 
 namespace IM_Core
 {
@@ -29,6 +31,15 @@ namespace IM_Core
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            services.AddOptions<ConnectionStringOptions>()
+               .Bind(Configuration.GetSection(ConnectionStringOptions.ConnectionStringName))
+               .ValidateDataAnnotations();
+
+            services.AddScoped(typeof(DataAccessMethods));
+            services.AddScoped(typeof(UsersMethods));
+            services.AddScoped(typeof(IncidentsMethods));
+            services.AddScoped(typeof(MessagesMethods));
 
             services.AddMvc(setupAction => {
                 setupAction.EnableEndpointRouting = false;

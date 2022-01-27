@@ -11,13 +11,13 @@ namespace IM.SQL
 {
     public class UsersMethods
     {
-        //private readonly IConfiguration _config;
+        private readonly DataAccessMethods dbAccess;
 
-        //public UsersMethods(IConfiguration config)
-        //{
-        //    _config = config;
-        //}
-        public static UserLogin Login(string username, string password)
+        public UsersMethods(DataAccessMethods dataAccessMethods)
+        {
+            dbAccess = dataAccessMethods;
+        }
+        public UserLogin Login(string username, string password)
         {
             var loginTable = new DataTable();
             var userTable = new DataTable();
@@ -28,7 +28,7 @@ namespace IM.SQL
                   { "Password" , password },
             };
 
-            var dbResponse = DataAccessMethods.ExecuteProcedure("Login", parameters);
+            var dbResponse = dbAccess.ExecuteProcedure("Login", parameters);
             var ds = dbResponse.Ds;
 
             if (ds == null || ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0)
@@ -64,7 +64,7 @@ namespace IM.SQL
             return userLogin.First();
         }
 
-        public static UserLogin Authenticate(AuthenticateRequest model)
+        public UserLogin Authenticate(AuthenticateRequest model)
         {
             var userLogin = Login(model.Username, model.Password);
             // authentication successful so generate jwt token
@@ -74,7 +74,7 @@ namespace IM.SQL
             return userLogin;
         }
 
-        public static User GetUserById(string userId)
+        public  User GetUserById(string userId)
         {
             var dt = new DataTable();
             var parameters = new SortedList<string, object>()
@@ -82,7 +82,7 @@ namespace IM.SQL
                   { "UserId" , userId },
             };
 
-            var dbResponse = DataAccessMethods.ExecuteProcedure("UserById", parameters);
+            var dbResponse = dbAccess.ExecuteProcedure("UserById", parameters);
             var ds = dbResponse.Ds;
 
             if (ds == null || ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0)
@@ -105,7 +105,7 @@ namespace IM.SQL
             return Users.First();
         }
 
-        public static DbResponse UpdateHubId(string userId, string hubId)
+        public  DbResponse UpdateHubId(string userId, string hubId)
         {
             var dt = new DataTable();
             var parameters = new SortedList<string, object>()
@@ -114,17 +114,17 @@ namespace IM.SQL
                   { "HubId" , hubId },
             };
 
-            var dbResponse = DataAccessMethods.ExecuteProcedure("UpdateHubId", parameters);
+            var dbResponse = dbAccess.ExecuteProcedure("UpdateHubId", parameters);
             return dbResponse;
         }
 
-        public static List<User> GetAllUsers()
+        public List<User> GetAllUsers()
         {
             var dt = new DataTable();
             var parameters = new SortedList<string, object>()
             { };
 
-            var dbResponse = DataAccessMethods.ExecuteProcedure("GetAllUsers", parameters);
+            var dbResponse = dbAccess.ExecuteProcedure("GetAllUsers", parameters);
             if(dbResponse.Error)
             {
                 var users = new List<User>();
@@ -160,7 +160,7 @@ namespace IM.SQL
             return Users;
         }
 
-        public static DbResponse AddUser(User user)
+        public  DbResponse AddUser(User user)
         {
             var parameters = new SortedList<string, object>()
             {
@@ -171,10 +171,10 @@ namespace IM.SQL
                   { "Phone" , user.Phone }
             };
 
-            return DataAccessMethods.ExecuteProcedure("AddNewUser", parameters);
+            return dbAccess.ExecuteProcedure("AddNewUser", parameters);
         }
 
-        public static UsersWithPage GetUsersPage(int pageSize, int pageNumber, string sortBy, string sortDirection, string Serach)
+        public  UsersWithPage GetUsersPage(int pageSize, int pageNumber, string sortBy, string sortDirection, string Serach)
         {
             var dt = new DataTable();
             var parameters = new SortedList<string, object>()
@@ -186,7 +186,7 @@ namespace IM.SQL
                  { "SearchText" , Serach},
             };
 
-            var dbResponse = DataAccessMethods.ExecuteProcedure("GetUsersPage", parameters);
+            var dbResponse = dbAccess.ExecuteProcedure("GetUsersPage", parameters);
             var ds = dbResponse.Ds;
 
             if (ds == null || ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0)
@@ -214,14 +214,14 @@ namespace IM.SQL
             };
         }
 
-        public static List<string> GetHubIds(string incidentId, string userId)
+        public  List<string> GetHubIds(string incidentId, string userId)
         {
             var dt = new DataTable();
             var parameters = new SortedList<string, object>()
             {
                  { "IncidentId" , incidentId}
             };
-            var dbResponse = DataAccessMethods.ExecuteProcedure("GetHubIdByIncident", parameters);
+            var dbResponse = dbAccess.ExecuteProcedure("GetHubIdByIncident", parameters);
             var ds = dbResponse.Ds;
 
             if (ds == null || ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0 )
@@ -234,14 +234,14 @@ namespace IM.SQL
             return hubIds;
         }
 
-        public static string GetHubIdByUserId(string userId)
+        public string GetHubIdByUserId(string userId)
         {
             var dt = new DataTable();
             var parameters = new SortedList<string, object>()
             {
                  { "IncidentId" , userId}
             };
-            var dbResponse = DataAccessMethods.ExecuteProcedure("GetHubIdByUserId", parameters);
+            var dbResponse = dbAccess.ExecuteProcedure("GetHubIdByUserId", parameters);
             var ds = dbResponse.Ds;
 
             if (ds == null || ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0)
@@ -252,7 +252,7 @@ namespace IM.SQL
         }
 
 
-        public static DbResponse UpdateIsRead(string notificationId , bool isRead)
+        public DbResponse UpdateIsRead(string notificationId , bool isRead)
         {
            
             var dt = new DataTable();
@@ -261,10 +261,10 @@ namespace IM.SQL
                  { "Id" , notificationId},
                  { "IsRead" , isRead}
             };
-            var dbResponse = DataAccessMethods.ExecuteProcedure("markReadUnread", parameters);            
+            var dbResponse = dbAccess.ExecuteProcedure("markReadUnread", parameters);            
             return dbResponse;           
         }
-        public static List<IncidentNotification> GetUserNotifications(string userId)
+        public List<IncidentNotification> GetUserNotifications(string userId)
         {
             var dt = new DataTable();
             var parameters = new SortedList<string, object>()
@@ -272,7 +272,7 @@ namespace IM.SQL
                  { "UserId" , userId}                
             };
 
-            var dbResponse = DataAccessMethods.ExecuteProcedure("GetUserNotifications", parameters);
+            var dbResponse = dbAccess.ExecuteProcedure("GetUserNotifications", parameters);
             var ds = dbResponse.Ds;
 
             if (ds == null || ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0)

@@ -17,16 +17,19 @@ namespace IM_Core.ApiControllers
     [ApiController]
     public class UsersController : ControllerBase
     {
+        private readonly UsersMethods _usersMethods;
+
         private readonly IHostingEnvironment _hostingEnvironment;
-        public UsersController(IHostingEnvironment hostingEnvironment)
+        public UsersController(IHostingEnvironment hostingEnvironment, UsersMethods usersMethods)
         {
             _hostingEnvironment = hostingEnvironment;
+            _usersMethods = usersMethods;
         }
 
         [HttpPost("authenticate")]
         public IActionResult Authenticate(AuthenticateRequest model)
         {
-            var response = UsersMethods.Authenticate(model);
+            var response = _usersMethods.Authenticate(model);
             if (response == null)
                 return BadRequest(new { message = "Username or password is incorrect" });          
 
@@ -37,7 +40,7 @@ namespace IM_Core.ApiControllers
        // [Authorize]
         public IActionResult AllUsers()
         {
-            return Ok(UsersMethods.GetAllUsers());
+            return Ok(_usersMethods.GetAllUsers());
         }
 
         [HttpGet("UpdateIsRead")]
@@ -45,7 +48,7 @@ namespace IM_Core.ApiControllers
         public IActionResult UpdateIsRead(string notificationId, string isRead)
         {
             bool isReadStatus = bool.Parse(isRead);
-            var response = UsersMethods.UpdateIsRead(notificationId, isReadStatus);
+            var response = _usersMethods.UpdateIsRead(notificationId, isReadStatus);
             if (response.Error)
                 return StatusCode(500);
             return Ok();
@@ -56,7 +59,7 @@ namespace IM_Core.ApiControllers
         [Authorize]
         public IActionResult UserNotifications(string userId)
         {
-            return Ok(UsersMethods.GetUserNotifications(userId));
+            return Ok(_usersMethods.GetUserNotifications(userId));
         }
 
 
@@ -64,7 +67,7 @@ namespace IM_Core.ApiControllers
         [Authorize]
         public IActionResult UpdateHubId([FromBody] HubUpdate HU)
         {
-            var dbResponse = UsersMethods.UpdateHubId(HU.UserId, HU.HubId);
+            var dbResponse = _usersMethods.UpdateHubId(HU.UserId, HU.HubId);
             if (dbResponse.Error)
                 return BadRequest(new { message = "Could not update hubId. Error : " + dbResponse.ErrorMsg});
             return Ok();
@@ -88,7 +91,7 @@ namespace IM_Core.ApiControllers
                 return BadRequest(new { message = "Please enter all required fields." });                
             }
 
-            var dbResponse = UsersMethods.AddUser(user);
+            var dbResponse = _usersMethods.AddUser(user);
             if (dbResponse.Error)
             {
                 if (dbResponse.ErrorMsg.Contains("UNQ__Users__Username"))
@@ -126,7 +129,7 @@ namespace IM_Core.ApiControllers
         [Authorize]
         public IActionResult GetUsersWithPage(int PageSize, int PageNumber, string SortBy, string SortDirection, string Search)
         {
-            var response = UsersMethods.GetUsersPage(PageSize, PageNumber, SortBy, SortDirection, Search);
+            var response = _usersMethods.GetUsersPage(PageSize, PageNumber, SortBy, SortDirection, Search);
             return Ok(response);
         }
 

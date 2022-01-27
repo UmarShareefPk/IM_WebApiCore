@@ -9,8 +9,13 @@ namespace IM.SQL
 {
     public class IncidentsMethods
     {
+        private readonly DataAccessMethods dbAccess;
 
-        public static DbResponse AddIncident(Incident incident)
+        public IncidentsMethods(DataAccessMethods dataAccessMethods)
+        {
+            dbAccess = dataAccessMethods;
+        }
+        public DbResponse AddIncident(Incident incident)
         {
             var parameters = new SortedList<string, object>()
             {
@@ -24,10 +29,10 @@ namespace IM.SQL
                   { "Status" , incident.Status.ToUpper() },
 
             };
-            return DataAccessMethods.ExecuteProcedure("AddNewIncident", parameters);
+            return dbAccess.ExecuteProcedure("AddNewIncident", parameters);
         }
 
-        public static DbResponse AddComment(Comment comment)
+        public DbResponse AddComment(Comment comment)
         {
             var parameters = new SortedList<string, object>()
             {
@@ -37,10 +42,10 @@ namespace IM.SQL
                  
 
             };
-            return DataAccessMethods.ExecuteProcedure("AddComment", parameters);
+            return dbAccess.ExecuteProcedure("AddComment", parameters);
         }
 
-        public static DbResponse AddIncidentAttachments(IncidentAttachments incidentAttachments)
+        public  DbResponse AddIncidentAttachments(IncidentAttachments incidentAttachments)
         {
             var parameters = new SortedList<string, object>()
             {
@@ -48,10 +53,10 @@ namespace IM.SQL
                   { "ContentType" , incidentAttachments.ContentType },
                   { "IncidentId" , incidentAttachments.IncidentId }
             };
-            return DataAccessMethods.ExecuteProcedure("AddIncidentAttachment", parameters);
+            return dbAccess.ExecuteProcedure("AddIncidentAttachment", parameters);
         }
 
-        public static DbResponse AddCommentAttachments(CommentAttachments commentAttachments)
+        public  DbResponse AddCommentAttachments(CommentAttachments commentAttachments)
         {
             var parameters = new SortedList<string, object>()
             {
@@ -59,17 +64,17 @@ namespace IM.SQL
                   { "ContentType" , commentAttachments.ContentType },
                   { "CommentId" , commentAttachments.CommentId }
             };
-            var rr =  DataAccessMethods.ExecuteProcedure("AddCommentAttachment", parameters);
+            var rr = dbAccess.ExecuteProcedure("AddCommentAttachment", parameters);
             return rr;
         }
 
-        public static List<IncidentAttachments> GetIncidentAttachment(string incidentId)
+        public List<IncidentAttachments> GetIncidentAttachment(string incidentId)
         {
             var parameters = new SortedList<string, object>()
             {
                   { "IncidentId" , incidentId }  
             };
-            var dbResponse =  DataAccessMethods.ExecuteProcedure("GetAttachmentByIncidentId", parameters);
+            var dbResponse = dbAccess.ExecuteProcedure("GetAttachmentByIncidentId", parameters);
 
 
             var dt = dbResponse.Ds.Tables[0];
@@ -87,7 +92,7 @@ namespace IM.SQL
             return attachments;
         }
 
-        public static string DeleteFile(string type, string filetId, string userId)
+        public string DeleteFile(string type, string filetId, string userId)
         {
             var parameters = new SortedList<string, object>()
             {
@@ -98,11 +103,11 @@ namespace IM.SQL
             var dbResponse = new DbResponse();
             if (type.ToLower() == "comment")
             {
-                dbResponse =  DataAccessMethods.ExecuteProcedure("DeleteCommentAttachment", parameters);
+                dbResponse = dbAccess.ExecuteProcedure("DeleteCommentAttachment", parameters);
             }
             else
             {
-                dbResponse = DataAccessMethods.ExecuteProcedure("DeleteIncidentAttachment", parameters);
+                dbResponse = dbAccess.ExecuteProcedure("DeleteIncidentAttachment", parameters);
             }
             var ds = dbResponse.Ds;
 
@@ -113,14 +118,14 @@ namespace IM.SQL
 
         }
 
-            public static Incident GetIncidentrById(string incidentId)
+            public Incident GetIncidentrById(string incidentId)
         {
             var parameters = new SortedList<string, object>()
             {
                   { "Id" , incidentId},
             };
 
-            var dbResponse = DataAccessMethods.ExecuteProcedure("GetIncidentById", parameters);
+            var dbResponse = dbAccess.ExecuteProcedure("GetIncidentById", parameters);
             var ds = dbResponse.Ds;
 
             if (ds == null || ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0)
@@ -201,14 +206,14 @@ namespace IM.SQL
             return incidents.First();
         }
 
-        public static Comment GetCommentById(string commentId)
+        public  Comment GetCommentById(string commentId)
         {
             var parameters = new SortedList<string, object>()
             {
                   { "CommentId" , commentId},
             };
 
-            var dbResponse = DataAccessMethods.ExecuteProcedure("GetCommentById", parameters);
+            var dbResponse = dbAccess.ExecuteProcedure("GetCommentById", parameters);
             var ds = dbResponse.Ds;
 
             if (ds == null || ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0)
@@ -240,7 +245,7 @@ namespace IM.SQL
             return comment;
         }
 
-        public static void DeleteComment(string commentId , string userId)
+        public  void DeleteComment(string commentId , string userId)
         {
             var parameters = new SortedList<string, object>()
             {
@@ -248,21 +253,21 @@ namespace IM.SQL
                   { "UserId" , userId}
             };
 
-            var dbResponse = DataAccessMethods.ExecuteProcedure("DeleteComment", parameters);
+            var dbResponse = dbAccess.ExecuteProcedure("DeleteComment", parameters);
             var ds = dbResponse.Ds;
 
             if (ds == null || ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0)
                 return;
         }
 
-        public static List<Incident> GetAllIncidents()
+        public  List<Incident> GetAllIncidents()
         {
             var dt = new DataTable();
             var parameters = new SortedList<string, object>()
             {
             };
 
-            var dbResponse = DataAccessMethods.ExecuteProcedure("GetAllIncidents", parameters);
+            var dbResponse = dbAccess.ExecuteProcedure("GetAllIncidents", parameters);
             var ds = dbResponse.Ds;
 
             if (ds == null || ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0)
@@ -290,7 +295,7 @@ namespace IM.SQL
             return incidents;
         }
 
-        public static IncidentsWithPage GetIncidentsPage(int pageSize , int pageNumber, string sortBy, string sortDirection, string Serach)
+        public  IncidentsWithPage GetIncidentsPage(int pageSize , int pageNumber, string sortBy, string sortDirection, string Serach)
         {
             var dt = new DataTable();
             var parameters = new SortedList<string, object>()
@@ -302,7 +307,7 @@ namespace IM.SQL
                  { "SearchText" , Serach},
             };
 
-            var dbResponse = DataAccessMethods.ExecuteProcedure("GetIncidentsPage", parameters);
+            var dbResponse = dbAccess.ExecuteProcedure("GetIncidentsPage", parameters);
             var ds = dbResponse.Ds;
 
             if (ds == null || ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0)
@@ -333,7 +338,7 @@ namespace IM.SQL
             };
         }
 
-        public static object GetIncidentsPageTest(int pageSize, int pageNumber, string sortBy, string sortDirection, string Serach)
+        public  object GetIncidentsPageTest(int pageSize, int pageNumber, string sortBy, string sortDirection, string Serach)
         {
             var dt = new DataTable();
             var parameters = new SortedList<string, object>()
@@ -345,7 +350,7 @@ namespace IM.SQL
                  { "SearchText" , Serach},
             };
 
-            var dbResponse = DataAccessMethods.ExecuteProcedure("GetIncidentsPage", parameters);
+            var dbResponse = dbAccess.ExecuteProcedure("GetIncidentsPage", parameters);
             var ds = dbResponse.Ds;
 
             if (dbResponse.Error)
@@ -379,7 +384,7 @@ namespace IM.SQL
             };
         }
 
-        public static DbResponse UpdateIncident(string incidentId , string parameter , string value , string userId)
+        public  DbResponse UpdateIncident(string incidentId , string parameter , string value , string userId)
         {
             var dt = new DataTable();
             var parameters = new SortedList<string, object>()
@@ -390,10 +395,10 @@ namespace IM.SQL
                  { "UserId" , userId},             
             };
 
-            return DataAccessMethods.ExecuteProcedure("UpdateIncident", parameters);
+            return dbAccess.ExecuteProcedure("UpdateIncident", parameters);
         }
 
-        public static DbResponse UpdateComment(string commentId, string commentText, string userId)
+        public DbResponse UpdateComment(string commentId, string commentText, string userId)
         {
             var dt = new DataTable();
             var parameters = new SortedList<string, object>()
@@ -403,11 +408,11 @@ namespace IM.SQL
                  { "UserId" , userId}
             };
 
-            return DataAccessMethods.ExecuteProcedure("UpdateComment", parameters);
+            return dbAccess.ExecuteProcedure("UpdateComment", parameters);
         }
 
         /////////////////////////////////////// Dashboard //////////////////////
-        public static object KPI(string userId)
+        public  object KPI(string userId)
         {
             var dt = new DataTable();
             var parameters = new SortedList<string, object>()
@@ -415,7 +420,7 @@ namespace IM.SQL
                  { "UserId" , userId}
             };
 
-            var dbResponse =  DataAccessMethods.ExecuteProcedure("GetKPI", parameters);
+            var dbResponse =  dbAccess.ExecuteProcedure("GetKPI", parameters);
             var data = dbResponse.Ds.Tables[0].Rows[0];
 
             return new
@@ -430,14 +435,14 @@ namespace IM.SQL
             };
         }
 
-        public static object OverallWidget()
+        public  object OverallWidget()
         {
             var dt = new DataTable();
             var parameters = new SortedList<string, object>()
             {                 
             };
 
-            var dbResponse = DataAccessMethods.ExecuteProcedure("GetOverallWidget", parameters);
+            var dbResponse = dbAccess.ExecuteProcedure("GetOverallWidget", parameters);
             var data = dbResponse.Ds.Tables[0].Rows[0];
 
             return new
@@ -450,14 +455,14 @@ namespace IM.SQL
             };
         }
 
-        public static List<Incident> Last5Incidents()
+        public  List<Incident> Last5Incidents()
         {
             var dt = new DataTable();
             var parameters = new SortedList<string, object>()
             {
             };
 
-            var dbResponse = DataAccessMethods.ExecuteProcedure("GetLast5Incidents", parameters);
+            var dbResponse = dbAccess.ExecuteProcedure("GetLast5Incidents", parameters);
             var ds = dbResponse.Ds;
 
             if (ds == null || ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0)
@@ -483,14 +488,14 @@ namespace IM.SQL
             return incidents;
         }
 
-        public static List<Incident> Oldest5UnresolvedIncidents()
+        public  List<Incident> Oldest5UnresolvedIncidents()
         {
             var dt = new DataTable();
             var parameters = new SortedList<string, object>()
             {
             };
 
-            var dbResponse = DataAccessMethods.ExecuteProcedure("GetOldest5UnresolvedIncidents", parameters);
+            var dbResponse = dbAccess.ExecuteProcedure("GetOldest5UnresolvedIncidents", parameters);
             var ds = dbResponse.Ds;
 
             if (ds == null || ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0)
@@ -517,14 +522,14 @@ namespace IM.SQL
         }
 
 
-        public static object MostAssignedToUsersIncidents()
+        public  object MostAssignedToUsersIncidents()
         {
             var dt = new DataTable();
             var parameters = new SortedList<string, object>()
             {
             };
 
-            var dbResponse = DataAccessMethods.ExecuteProcedure("GetMostAssignedToUsersIncidents", parameters);
+            var dbResponse = dbAccess.ExecuteProcedure("GetMostAssignedToUsersIncidents", parameters);
             var data = dbResponse.Ds.Tables[0];
 
             return (from rw in data.AsEnumerable()

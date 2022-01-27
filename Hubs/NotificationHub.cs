@@ -9,6 +9,11 @@ namespace IM.Hubs
 {
     public class NotificationHub : Hub
     {
+        private readonly UsersMethods _usersMethods;
+        public NotificationHub(UsersMethods usersMethods)
+        {
+            _usersMethods = usersMethods;
+        }
         public void Send( string message)
         {
             string s = "iGD7rER_rNOT44SNeTLbfA";
@@ -25,7 +30,7 @@ namespace IM.Hubs
 
         public void SendIncidentUpdate(string incidentId , string userId)
         {
-            List<string> hubIds =  UsersMethods.GetHubIds(incidentId , userId);
+            List<string> hubIds = _usersMethods.GetHubIds(incidentId , userId);
             foreach(string id in hubIds)
             {
                 Clients.Client(id).SendAsync("UpdateNotifications", incidentId);
@@ -35,7 +40,7 @@ namespace IM.Hubs
 
         public void SendMessage(string conversationId, string userId)
         {
-            string hubId = UsersMethods.GetHubIdByUserId(userId);
+            string hubId = _usersMethods.GetHubIdByUserId(userId);
 
             Clients.Client(hubId).SendAsync("UpdateConversation", conversationId);
 

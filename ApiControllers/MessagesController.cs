@@ -21,9 +21,12 @@ namespace IM_Core.ApiControllers
     public class MessagesController : ControllerBase
     {
         private readonly IHostingEnvironment _hostingEnvironment;
-        public MessagesController(IHostingEnvironment hostingEnvironment)
+        private readonly MessagesMethods _messagesMethods;
+
+        public MessagesController(IHostingEnvironment hostingEnvironment, MessagesMethods messagesMethods)
         {
             _hostingEnvironment = hostingEnvironment;
+            _messagesMethods = messagesMethods;
         }
 
         [HttpPost("AddMessage")]
@@ -45,7 +48,7 @@ namespace IM_Core.ApiControllers
             {
                 return BadRequest(new { message = "Please enter all required fields." });
             }
-            var result = MessagesMethods.AddMessage(From, To, MessageText);
+            var result = _messagesMethods.AddMessage(From, To, MessageText);
 
             if (result.GetType() == typeof(DbResponse))
             {
@@ -64,7 +67,7 @@ namespace IM_Core.ApiControllers
         [Authorize]
         public async Task<IActionResult> GetConversationsByUser(string UserId)
         {
-            var result =  MessagesMethods.GetConversationsByUser(UserId);
+            var result = _messagesMethods.GetConversationsByUser(UserId);
 
             if (result.GetType() == typeof(DbResponse))
             {
@@ -80,7 +83,7 @@ namespace IM_Core.ApiControllers
         [Authorize]
         public async Task<IActionResult> GetMessagesByConversations(string ConversationId)
         {
-            var result = MessagesMethods.GetMessagesByConversations(ConversationId);
+            var result = _messagesMethods.GetMessagesByConversations(ConversationId);
 
             if (result.GetType() == typeof(DbResponse))
             {
@@ -96,7 +99,7 @@ namespace IM_Core.ApiControllers
         [Authorize]
         public async Task<IActionResult> GetMessagesByUser(string UserId)
         {        
-            var result =  MessagesMethods.GetMessagesByUser(UserId);
+            var result = _messagesMethods.GetMessagesByUser(UserId);
 
             if (result.GetType() == typeof(DbResponse))
             {
