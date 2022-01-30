@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Web;
+using System.Threading.Tasks;
 
 namespace IM.SQL
 {
@@ -18,7 +18,7 @@ namespace IM.SQL
         {
             dbAccess = dataAccessMethods;
         }
-        public object AddMessage(string From, string To, string MessageText)
+        public async Task<object> AddMessageAsync(string From, string To, string MessageText)
         {
             var parameters = new SortedList<string, object>()
             {
@@ -27,7 +27,7 @@ namespace IM.SQL
                   { "MessageText" , MessageText },                
             };
 
-            var dbResponse = dbAccess.ExecuteProcedure("AddMessage", parameters);
+            var dbResponse = await dbAccess.ExecuteProcedureAsync("AddMessage", parameters);
 
             if (dbResponse.Error)
                 return dbResponse;
@@ -46,14 +46,14 @@ namespace IM.SQL
         }
 
 
-        public object GetConversationsByUser(string UserId)
+        public async Task<object> GetConversationsByUserAsync(string UserId)
         {
             var parameters = new SortedList<string, object>()
             {
                   { "UserId" , UserId },
             };
 
-            var dbResponse = dbAccess.ExecuteProcedure("GetConversationsByUser", parameters);
+            var dbResponse = await dbAccess.ExecuteProcedureAsync("GetConversationsByUser", parameters);
 
             if (dbResponse.Error)
                 return dbResponse;
@@ -70,14 +70,14 @@ namespace IM.SQL
                     }).ToList();
         }
 
-        public object GetMessagesByConversations(string ConversationId)
+        public async Task<object> GetMessagesByConversationsAsync(string ConversationId)
         {
             var parameters = new SortedList<string, object>()
             {
                   { "ConversationId" , ConversationId },
             };
 
-            var dbResponse = dbAccess.ExecuteProcedure("GetMessagesByConversation", parameters);
+            var dbResponse = await dbAccess.ExecuteProcedureAsync("GetMessagesByConversation", parameters);
 
             if (dbResponse.Error)
                 return dbResponse;
@@ -96,14 +96,14 @@ namespace IM.SQL
                     }).ToList();
         }
 
-        public object GetMessagesByUser(string UserId)
+        public async Task<object> GetMessagesByUserAsync(string UserId)
         {
             var parameters = new SortedList<string, object>()
             {
                   { "UserId" , UserId },
             };
 
-            var dbResponse = dbAccess.ExecuteProcedure("GetMessagesByUser", parameters);
+            var dbResponse = await dbAccess.ExecuteProcedureAsync("GetMessagesByUser", parameters);
 
             if (dbResponse.Error)
                 return dbResponse;

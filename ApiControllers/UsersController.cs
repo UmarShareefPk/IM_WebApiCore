@@ -27,9 +27,9 @@ namespace IM_Core.ApiControllers
         }
 
         [HttpPost("authenticate")]
-        public IActionResult Authenticate(AuthenticateRequest model)
+        public async Task<IActionResult> AuthenticateAsync(AuthenticateRequest model)
         {
-            var response = _usersMethods.Authenticate(model);
+            var response = await _usersMethods.AuthenticateAsync(model);
             if (response == null)
                 return BadRequest(new { message = "Username or password is incorrect" });          
 
@@ -38,17 +38,17 @@ namespace IM_Core.ApiControllers
 
         [HttpGet("AllUsers")]
        // [Authorize]
-        public IActionResult AllUsers()
+        public async Task<IActionResult> AllUsersAsync()
         {
-            return Ok(_usersMethods.GetAllUsers());
+            return Ok( await _usersMethods.GetAllUsersAsync());
         }
 
         [HttpGet("UpdateIsRead")]
         [Authorize]
-        public IActionResult UpdateIsRead(string notificationId, string isRead)
+        public async Task<IActionResult> UpdateIsReadAsync(string notificationId, string isRead)
         {
             bool isReadStatus = bool.Parse(isRead);
-            var response = _usersMethods.UpdateIsRead(notificationId, isReadStatus);
+            var response = await _usersMethods.UpdateIsReadAsync(notificationId, isReadStatus);
             if (response.Error)
                 return StatusCode(500);
             return Ok();
@@ -57,17 +57,17 @@ namespace IM_Core.ApiControllers
 
         [HttpGet("UserNotifications")]
         [Authorize]
-        public IActionResult UserNotifications(string userId)
+        public async Task<IActionResult> UserNotificationsAsync(string userId)
         {
-            return Ok(_usersMethods.GetUserNotifications(userId));
+            return Ok(await _usersMethods.GetUserNotificationsAsync(userId));
         }
 
 
         [HttpPost("UpdateHubId")]
         [Authorize]
-        public IActionResult UpdateHubId([FromBody] HubUpdate HU)
+        public async Task<IActionResult> UpdateHubIdAsync([FromBody] HubUpdate HU)
         {
-            var dbResponse = _usersMethods.UpdateHubId(HU.UserId, HU.HubId);
+            var dbResponse = await _usersMethods.UpdateHubIdAsync(HU.UserId, HU.HubId);
             if (dbResponse.Error)
                 return BadRequest(new { message = "Could not update hubId. Error : " + dbResponse.ErrorMsg});
             return Ok();
@@ -91,7 +91,7 @@ namespace IM_Core.ApiControllers
                 return BadRequest(new { message = "Please enter all required fields." });                
             }
 
-            var dbResponse = _usersMethods.AddUser(user);
+            var dbResponse = await _usersMethods.AddUserAsync(user);
             if (dbResponse.Error)
             {
                 if (dbResponse.ErrorMsg.Contains("UNQ__Users__Username"))
@@ -127,9 +127,9 @@ namespace IM_Core.ApiControllers
 
         [HttpGet("GetUsersWithPage")]
         [Authorize]
-        public IActionResult GetUsersWithPage(int PageSize, int PageNumber, string SortBy, string SortDirection, string Search)
+        public async Task<IActionResult> GetUsersWithPageAsync(int PageSize, int PageNumber, string SortBy, string SortDirection, string Search)
         {
-            var response = _usersMethods.GetUsersPage(PageSize, PageNumber, SortBy, SortDirection, Search);
+            var response = await _usersMethods.GetUsersPageAsync(PageSize, PageNumber, SortBy, SortDirection, Search);
             return Ok(response);
         }
 

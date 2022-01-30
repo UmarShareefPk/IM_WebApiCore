@@ -28,21 +28,21 @@ namespace IM.Hubs
 
         }
 
-        public void SendIncidentUpdate(string incidentId , string userId)
+        public async Task SendIncidentUpdateAsync(string incidentId , string userId)
         {
-            List<string> hubIds = _usersMethods.GetHubIds(incidentId , userId);
+            List<string> hubIds = await _usersMethods.GetHubIdsAsync(incidentId , userId);
             foreach(string id in hubIds)
             {
-                Clients.Client(id).SendAsync("UpdateNotifications", incidentId);
+               await Clients.Client(id).SendAsync("UpdateNotifications", incidentId);
             }
         }
 
 
-        public void SendMessage(string conversationId, string userId)
+        public async Task SendMessageAsync(string conversationId, string userId)
         {
-            string hubId = _usersMethods.GetHubIdByUserId(userId);
+            string hubId = await _usersMethods.GetHubIdByUserIdAsync(userId);
 
-            Clients.Client(hubId).SendAsync("UpdateConversation", conversationId);
+           await Clients.Client(hubId).SendAsync("UpdateConversation", conversationId);
 
         }
 

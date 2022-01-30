@@ -48,7 +48,7 @@ namespace IM_Core.ApiControllers
             {
                 return BadRequest(new { message = "Please enter all required fields." });
             }
-            var result = _messagesMethods.AddMessage(From, To, MessageText);
+            var result = await _messagesMethods.AddMessageAsync(From, To, MessageText);
 
             if (result.GetType() == typeof(DbResponse))
             {
@@ -67,7 +67,7 @@ namespace IM_Core.ApiControllers
         [Authorize]
         public async Task<IActionResult> GetConversationsByUser(string UserId)
         {
-            var result = _messagesMethods.GetConversationsByUser(UserId);
+            var result = _messagesMethods.GetConversationsByUserAsync(UserId);
 
             if (result.GetType() == typeof(DbResponse))
             {
@@ -83,7 +83,7 @@ namespace IM_Core.ApiControllers
         [Authorize]
         public async Task<IActionResult> GetMessagesByConversations(string ConversationId)
         {
-            var result = _messagesMethods.GetMessagesByConversations(ConversationId);
+            var result = _messagesMethods.GetMessagesByConversationsAsync(ConversationId);
 
             if (result.GetType() == typeof(DbResponse))
             {
@@ -99,7 +99,7 @@ namespace IM_Core.ApiControllers
         [Authorize]
         public async Task<IActionResult> GetMessagesByUser(string UserId)
         {        
-            var result = _messagesMethods.GetMessagesByUser(UserId);
+            var result = _messagesMethods.GetMessagesByUserAsync(UserId);
 
             if (result.GetType() == typeof(DbResponse))
             {

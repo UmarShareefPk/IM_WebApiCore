@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Web;
+using System.Threading.Tasks;
 
 namespace IM.SQL
 {
@@ -17,7 +17,7 @@ namespace IM.SQL
         {
             dbAccess = dataAccessMethods;
         }
-        public UserLogin Login(string username, string password)
+        public async Task<UserLogin> LoginAsync(string username, string password)
         {
             var loginTable = new DataTable();
             var userTable = new DataTable();
@@ -28,7 +28,7 @@ namespace IM.SQL
                   { "Password" , password },
             };
 
-            var dbResponse = dbAccess.ExecuteProcedure("Login", parameters);
+            var dbResponse = await dbAccess.ExecuteProcedureAsync("Login", parameters);
             var ds = dbResponse.Ds;
 
             if (ds == null || ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0)
@@ -64,9 +64,9 @@ namespace IM.SQL
             return userLogin.First();
         }
 
-        public UserLogin Authenticate(AuthenticateRequest model)
+        public async Task<UserLogin> AuthenticateAsync(AuthenticateRequest model)
         {
-            var userLogin = Login(model.Username, model.Password);
+            var userLogin = await LoginAsync(model.Username, model.Password);
             // authentication successful so generate jwt token
             if (userLogin != null)
                 userLogin.Token = JWT.generateJwtToken(userLogin, "This is very secret.");
@@ -74,7 +74,7 @@ namespace IM.SQL
             return userLogin;
         }
 
-        public  User GetUserById(string userId)
+        public async Task<User> GetUserByIdAsync(string userId)
         {
             var dt = new DataTable();
             var parameters = new SortedList<string, object>()
@@ -82,7 +82,7 @@ namespace IM.SQL
                   { "UserId" , userId },
             };
 
-            var dbResponse = dbAccess.ExecuteProcedure("UserById", parameters);
+            var dbResponse = await dbAccess.ExecuteProcedureAsync("UserById", parameters);
             var ds = dbResponse.Ds;
 
             if (ds == null || ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0)
@@ -105,7 +105,7 @@ namespace IM.SQL
             return Users.First();
         }
 
-        public  DbResponse UpdateHubId(string userId, string hubId)
+        public async Task<DbResponse> UpdateHubIdAsync(string userId, string hubId)
         {
             var dt = new DataTable();
             var parameters = new SortedList<string, object>()
@@ -114,17 +114,17 @@ namespace IM.SQL
                   { "HubId" , hubId },
             };
 
-            var dbResponse = dbAccess.ExecuteProcedure("UpdateHubId", parameters);
+            var dbResponse = await dbAccess.ExecuteProcedureAsync("UpdateHubId", parameters);
             return dbResponse;
         }
 
-        public List<User> GetAllUsers()
+        public async Task<List<User>> GetAllUsersAsync()
         {
             var dt = new DataTable();
             var parameters = new SortedList<string, object>()
             { };
 
-            var dbResponse = dbAccess.ExecuteProcedure("GetAllUsers", parameters);
+            var dbResponse = await dbAccess.ExecuteProcedureAsync("GetAllUsers", parameters);
             if(dbResponse.Error)
             {
                 var users = new List<User>();
@@ -160,7 +160,7 @@ namespace IM.SQL
             return Users;
         }
 
-        public  DbResponse AddUser(User user)
+        public async Task<DbResponse> AddUserAsync(User user)
         {
             var parameters = new SortedList<string, object>()
             {
@@ -171,10 +171,10 @@ namespace IM.SQL
                   { "Phone" , user.Phone }
             };
 
-            return dbAccess.ExecuteProcedure("AddNewUser", parameters);
+            return await dbAccess.ExecuteProcedureAsync("AddNewUser", parameters);
         }
 
-        public  UsersWithPage GetUsersPage(int pageSize, int pageNumber, string sortBy, string sortDirection, string Serach)
+        public async Task<UsersWithPage> GetUsersPageAsync(int pageSize, int pageNumber, string sortBy, string sortDirection, string Serach)
         {
             var dt = new DataTable();
             var parameters = new SortedList<string, object>()
@@ -186,7 +186,7 @@ namespace IM.SQL
                  { "SearchText" , Serach},
             };
 
-            var dbResponse = dbAccess.ExecuteProcedure("GetUsersPage", parameters);
+            var dbResponse = await dbAccess.ExecuteProcedureAsync("GetUsersPage", parameters);
             var ds = dbResponse.Ds;
 
             if (ds == null || ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0)
@@ -214,14 +214,14 @@ namespace IM.SQL
             };
         }
 
-        public  List<string> GetHubIds(string incidentId, string userId)
+        public async Task<List<string>> GetHubIdsAsync(string incidentId, string userId)
         {
             var dt = new DataTable();
             var parameters = new SortedList<string, object>()
             {
                  { "IncidentId" , incidentId}
             };
-            var dbResponse = dbAccess.ExecuteProcedure("GetHubIdByIncident", parameters);
+            var dbResponse = await dbAccess.ExecuteProcedureAsync("GetHubIdByIncident", parameters);
             var ds = dbResponse.Ds;
 
             if (ds == null || ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0 )
@@ -234,14 +234,14 @@ namespace IM.SQL
             return hubIds;
         }
 
-        public string GetHubIdByUserId(string userId)
+        public async Task<string> GetHubIdByUserIdAsync(string userId)
         {
             var dt = new DataTable();
             var parameters = new SortedList<string, object>()
             {
                  { "IncidentId" , userId}
             };
-            var dbResponse = dbAccess.ExecuteProcedure("GetHubIdByUserId", parameters);
+            var dbResponse = await dbAccess.ExecuteProcedureAsync("GetHubIdByUserId", parameters);
             var ds = dbResponse.Ds;
 
             if (ds == null || ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0)
@@ -252,7 +252,7 @@ namespace IM.SQL
         }
 
 
-        public DbResponse UpdateIsRead(string notificationId , bool isRead)
+        public async Task<DbResponse> UpdateIsReadAsync(string notificationId , bool isRead)
         {
            
             var dt = new DataTable();
@@ -261,10 +261,10 @@ namespace IM.SQL
                  { "Id" , notificationId},
                  { "IsRead" , isRead}
             };
-            var dbResponse = dbAccess.ExecuteProcedure("markReadUnread", parameters);            
+            var dbResponse = await dbAccess.ExecuteProcedureAsync("markReadUnread", parameters);            
             return dbResponse;           
         }
-        public List<IncidentNotification> GetUserNotifications(string userId)
+        public async Task<List<IncidentNotification>> GetUserNotificationsAsync(string userId)
         {
             var dt = new DataTable();
             var parameters = new SortedList<string, object>()
@@ -272,7 +272,7 @@ namespace IM.SQL
                  { "UserId" , userId}                
             };
 
-            var dbResponse = dbAccess.ExecuteProcedure("GetUserNotifications", parameters);
+            var dbResponse = await dbAccess.ExecuteProcedureAsync("GetUserNotifications", parameters);
             var ds = dbResponse.Ds;
 
             if (ds == null || ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0)

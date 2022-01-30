@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace IM.SQL
@@ -15,7 +16,7 @@ namespace IM.SQL
         {
             dbAccess = dataAccessMethods;
         }
-        public DbResponse AddIncident(Incident incident)
+        public async Task<DbResponse> AddIncident(Incident incident)
         {
             var parameters = new SortedList<string, object>()
             {
@@ -29,10 +30,10 @@ namespace IM.SQL
                   { "Status" , incident.Status.ToUpper() },
 
             };
-            return dbAccess.ExecuteProcedure("AddNewIncident", parameters);
+            return await dbAccess.ExecuteProcedureAsync("AddNewIncident", parameters);
         }
 
-        public DbResponse AddComment(Comment comment)
+        public async Task<DbResponse> AddCommentAsync(Comment comment)
         {
             var parameters = new SortedList<string, object>()
             {
@@ -42,10 +43,10 @@ namespace IM.SQL
                  
 
             };
-            return dbAccess.ExecuteProcedure("AddComment", parameters);
+            return await dbAccess.ExecuteProcedureAsync("AddComment", parameters);
         }
 
-        public  DbResponse AddIncidentAttachments(IncidentAttachments incidentAttachments)
+        public async Task<DbResponse> AddIncidentAttachmentsAsync(IncidentAttachments incidentAttachments)
         {
             var parameters = new SortedList<string, object>()
             {
@@ -53,10 +54,10 @@ namespace IM.SQL
                   { "ContentType" , incidentAttachments.ContentType },
                   { "IncidentId" , incidentAttachments.IncidentId }
             };
-            return dbAccess.ExecuteProcedure("AddIncidentAttachment", parameters);
+            return await dbAccess.ExecuteProcedureAsync("AddIncidentAttachment", parameters);
         }
 
-        public  DbResponse AddCommentAttachments(CommentAttachments commentAttachments)
+        public async Task<DbResponse> AddCommentAttachmentsAsync(CommentAttachments commentAttachments)
         {
             var parameters = new SortedList<string, object>()
             {
@@ -64,20 +65,20 @@ namespace IM.SQL
                   { "ContentType" , commentAttachments.ContentType },
                   { "CommentId" , commentAttachments.CommentId }
             };
-            var rr = dbAccess.ExecuteProcedure("AddCommentAttachment", parameters);
+            var rr = await dbAccess.ExecuteProcedureAsync("AddCommentAttachment", parameters);
             return rr;
         }
 
-        public List<IncidentAttachments> GetIncidentAttachment(string incidentId)
+        public async Task<List<IncidentAttachments>> GetIncidentAttachmentAsync(string incidentId)
         {
             var parameters = new SortedList<string, object>()
             {
                   { "IncidentId" , incidentId }  
             };
-            var dbResponse = dbAccess.ExecuteProcedure("GetAttachmentByIncidentId", parameters);
+            var dbResponse = await dbAccess.ExecuteProcedureAsync("GetAttachmentByIncidentId", parameters);
 
 
-            var dt = dbResponse.Ds.Tables[0];
+            var dt =  dbResponse.Ds.Tables[0];
 
             var attachments = (from rw in dt.AsEnumerable()
                              select new IncidentAttachments()
@@ -92,7 +93,7 @@ namespace IM.SQL
             return attachments;
         }
 
-        public string DeleteFile(string type, string filetId, string userId)
+        public async Task<string> DeleteFileAsync(string type, string filetId, string userId)
         {
             var parameters = new SortedList<string, object>()
             {
@@ -103,11 +104,11 @@ namespace IM.SQL
             var dbResponse = new DbResponse();
             if (type.ToLower() == "comment")
             {
-                dbResponse = dbAccess.ExecuteProcedure("DeleteCommentAttachment", parameters);
+                dbResponse = await dbAccess.ExecuteProcedureAsync("DeleteCommentAttachment", parameters);
             }
             else
             {
-                dbResponse = dbAccess.ExecuteProcedure("DeleteIncidentAttachment", parameters);
+                dbResponse = await dbAccess.ExecuteProcedureAsync("DeleteIncidentAttachment", parameters);
             }
             var ds = dbResponse.Ds;
 
@@ -118,14 +119,14 @@ namespace IM.SQL
 
         }
 
-            public Incident GetIncidentrById(string incidentId)
+        public async Task<Incident> GetIncidentrByIdAsync(string incidentId)
         {
             var parameters = new SortedList<string, object>()
             {
                   { "Id" , incidentId},
             };
 
-            var dbResponse = dbAccess.ExecuteProcedure("GetIncidentById", parameters);
+            var dbResponse = await dbAccess.ExecuteProcedureAsync("GetIncidentById", parameters);
             var ds = dbResponse.Ds;
 
             if (ds == null || ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0)
@@ -206,14 +207,14 @@ namespace IM.SQL
             return incidents.First();
         }
 
-        public  Comment GetCommentById(string commentId)
+        public async Task<Comment> GetCommentByIdAsync(string commentId)
         {
             var parameters = new SortedList<string, object>()
             {
                   { "CommentId" , commentId},
             };
 
-            var dbResponse = dbAccess.ExecuteProcedure("GetCommentById", parameters);
+            var dbResponse = await dbAccess.ExecuteProcedureAsync("GetCommentById", parameters);
             var ds = dbResponse.Ds;
 
             if (ds == null || ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0)
@@ -245,7 +246,7 @@ namespace IM.SQL
             return comment;
         }
 
-        public  void DeleteComment(string commentId , string userId)
+        public async Task DeleteCommentAsync(string commentId , string userId)
         {
             var parameters = new SortedList<string, object>()
             {
@@ -253,22 +254,22 @@ namespace IM.SQL
                   { "UserId" , userId}
             };
 
-            var dbResponse = dbAccess.ExecuteProcedure("DeleteComment", parameters);
+            var dbResponse = await dbAccess.ExecuteProcedureAsync("DeleteComment", parameters);
             var ds = dbResponse.Ds;
 
             if (ds == null || ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0)
                 return;
         }
 
-        public  List<Incident> GetAllIncidents()
+        public async Task<List<Incident>> GetAllIncidents()
         {
             var dt = new DataTable();
             var parameters = new SortedList<string, object>()
             {
             };
 
-            var dbResponse = dbAccess.ExecuteProcedure("GetAllIncidents", parameters);
-            var ds = dbResponse.Ds;
+            var dbResponse = await dbAccess.ExecuteProcedureAsync("GetAllIncidents", parameters);
+            var ds =  dbResponse.Ds;
 
             if (ds == null || ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0)
                 return null;
@@ -295,7 +296,7 @@ namespace IM.SQL
             return incidents;
         }
 
-        public  IncidentsWithPage GetIncidentsPage(int pageSize , int pageNumber, string sortBy, string sortDirection, string Serach)
+        public async Task<IncidentsWithPage> GetIncidentsPageAsync(int pageSize , int pageNumber, string sortBy, string sortDirection, string Serach)
         {
             var dt = new DataTable();
             var parameters = new SortedList<string, object>()
@@ -307,7 +308,7 @@ namespace IM.SQL
                  { "SearchText" , Serach},
             };
 
-            var dbResponse = dbAccess.ExecuteProcedure("GetIncidentsPage", parameters);
+            var dbResponse = await dbAccess.ExecuteProcedureAsync("GetIncidentsPage", parameters);
             var ds = dbResponse.Ds;
 
             if (ds == null || ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0)
@@ -338,7 +339,7 @@ namespace IM.SQL
             };
         }
 
-        public  object GetIncidentsPageTest(int pageSize, int pageNumber, string sortBy, string sortDirection, string Serach)
+        public async Task<object> GetIncidentsPageTestAsync(int pageSize, int pageNumber, string sortBy, string sortDirection, string Serach)
         {
             var dt = new DataTable();
             var parameters = new SortedList<string, object>()
@@ -350,7 +351,7 @@ namespace IM.SQL
                  { "SearchText" , Serach},
             };
 
-            var dbResponse = dbAccess.ExecuteProcedure("GetIncidentsPage", parameters);
+            var dbResponse = await dbAccess.ExecuteProcedureAsync("GetIncidentsPage", parameters);
             var ds = dbResponse.Ds;
 
             if (dbResponse.Error)
@@ -384,7 +385,7 @@ namespace IM.SQL
             };
         }
 
-        public  DbResponse UpdateIncident(string incidentId , string parameter , string value , string userId)
+        public async Task<DbResponse> UpdateIncidentAsync(string incidentId , string parameter , string value , string userId)
         {
             var dt = new DataTable();
             var parameters = new SortedList<string, object>()
@@ -395,10 +396,10 @@ namespace IM.SQL
                  { "UserId" , userId},             
             };
 
-            return dbAccess.ExecuteProcedure("UpdateIncident", parameters);
+            return await dbAccess.ExecuteProcedureAsync("UpdateIncident", parameters);
         }
 
-        public DbResponse UpdateComment(string commentId, string commentText, string userId)
+        public async Task<DbResponse> UpdateCommentAsync(string commentId, string commentText, string userId)
         {
             var dt = new DataTable();
             var parameters = new SortedList<string, object>()
@@ -408,11 +409,11 @@ namespace IM.SQL
                  { "UserId" , userId}
             };
 
-            return dbAccess.ExecuteProcedure("UpdateComment", parameters);
+            return await dbAccess.ExecuteProcedureAsync("UpdateComment", parameters);
         }
 
         /////////////////////////////////////// Dashboard //////////////////////
-        public  object KPI(string userId)
+        public async Task<object> KPIAsync(string userId)
         {
             var dt = new DataTable();
             var parameters = new SortedList<string, object>()
@@ -420,7 +421,7 @@ namespace IM.SQL
                  { "UserId" , userId}
             };
 
-            var dbResponse =  dbAccess.ExecuteProcedure("GetKPI", parameters);
+            var dbResponse = await dbAccess.ExecuteProcedureAsync("GetKPI", parameters);
             var data = dbResponse.Ds.Tables[0].Rows[0];
 
             return new
@@ -435,14 +436,14 @@ namespace IM.SQL
             };
         }
 
-        public  object OverallWidget()
+        public async Task<object> OverallWidgetAsync()
         {
             var dt = new DataTable();
             var parameters = new SortedList<string, object>()
             {                 
             };
 
-            var dbResponse = dbAccess.ExecuteProcedure("GetOverallWidget", parameters);
+            var dbResponse = await dbAccess.ExecuteProcedureAsync("GetOverallWidget", parameters);
             var data = dbResponse.Ds.Tables[0].Rows[0];
 
             return new
@@ -455,14 +456,14 @@ namespace IM.SQL
             };
         }
 
-        public  List<Incident> Last5Incidents()
+        public async Task<List<Incident>> Last5IncidentsAsync()
         {
             var dt = new DataTable();
             var parameters = new SortedList<string, object>()
             {
             };
 
-            var dbResponse = dbAccess.ExecuteProcedure("GetLast5Incidents", parameters);
+            var dbResponse = await dbAccess.ExecuteProcedureAsync("GetLast5Incidents", parameters);
             var ds = dbResponse.Ds;
 
             if (ds == null || ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0)
@@ -488,14 +489,14 @@ namespace IM.SQL
             return incidents;
         }
 
-        public  List<Incident> Oldest5UnresolvedIncidents()
+        public async Task<List<Incident>> Oldest5UnresolvedIncidentsAsync()
         {
             var dt = new DataTable();
             var parameters = new SortedList<string, object>()
             {
             };
 
-            var dbResponse = dbAccess.ExecuteProcedure("GetOldest5UnresolvedIncidents", parameters);
+            var dbResponse = await dbAccess.ExecuteProcedureAsync("GetOldest5UnresolvedIncidents", parameters);
             var ds = dbResponse.Ds;
 
             if (ds == null || ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0)
@@ -522,14 +523,14 @@ namespace IM.SQL
         }
 
 
-        public  object MostAssignedToUsersIncidents()
+        public async Task<object> MostAssignedToUsersIncidentsAsync()
         {
             var dt = new DataTable();
             var parameters = new SortedList<string, object>()
             {
             };
 
-            var dbResponse = dbAccess.ExecuteProcedure("GetMostAssignedToUsersIncidents", parameters);
+            var dbResponse = await dbAccess.ExecuteProcedureAsync("GetMostAssignedToUsersIncidents", parameters);
             var data = dbResponse.Ds.Tables[0];
 
             return (from rw in data.AsEnumerable()

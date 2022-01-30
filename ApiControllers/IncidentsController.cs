@@ -68,7 +68,7 @@ namespace IM_Core.ApiControllers
             if (!statusValidValues.Contains(incident.Status.ToUpper()))
                 return BadRequest(new { message = "Invalid Status Value. Valid values are N,O,I,C,A" });           
 
-            var dbResponse = _incidentsMethods.AddIncident(incident);
+            var dbResponse = await _incidentsMethods.AddIncident(incident);
 
             if (dbResponse.Error)
             {
@@ -102,7 +102,7 @@ namespace IM_Core.ApiControllers
                         {
                             await formFile.CopyToAsync(stream);
                         }
-                        _incidentsMethods.AddIncidentAttachments(attachment);
+                        await _incidentsMethods.AddIncidentAttachmentsAsync(attachment);
                     }
                 }
 
@@ -127,7 +127,7 @@ namespace IM_Core.ApiControllers
             {
                 return BadRequest(new { message = "Please enter all required fields." });                
             }
-            var dbResponse = _incidentsMethods.AddComment(comment);
+            var dbResponse = await _incidentsMethods.AddCommentAsync(comment);
 
             string comment_Id = dbResponse.Ds.Tables[0].Rows[0][0].ToString();
 
@@ -150,21 +150,21 @@ namespace IM_Core.ApiControllers
                         {
                             await formFile.CopyToAsync(stream);
                         }
-                        _incidentsMethods.AddCommentAttachments(attachment);
+                       await _incidentsMethods.AddCommentAttachmentsAsync(attachment);
                     }
                 }
             }//end of if count > 0
 
-            var newComment = _incidentsMethods.GetCommentById(comment_Id);
+            var newComment = await _incidentsMethods.GetCommentByIdAsync(comment_Id);
             return Ok(newComment);
         }
 
         [HttpGet("IncidentById")]
         [Authorize]
-        public IActionResult IncidentById(string Id)
+        public async Task<IActionResult> IncidentByIdAsync(string Id)
         {
             //Thread.Sleep(2000);
-            return Ok(_incidentsMethods.GetIncidentrById(Id));
+            return Ok(await _incidentsMethods.GetIncidentrByIdAsync(Id));
         }
 
 
@@ -190,20 +190,20 @@ namespace IM_Core.ApiControllers
 
         [HttpGet("DeleteFile")]
         [Authorize]
-        public string DeleteFile(string type, string commentId, string incidentId, string userId, string fileId, string filename, string contentType)
+        public async Task<string> DeleteFileAsync(string type, string commentId, string incidentId, string userId, string fileId, string filename, string contentType)
         {
             string ContentType = contentType;
             //Physical Path of Root Folder
             var rootPath = "";
             if (type.ToLower() == "comment")
             {
-                _incidentsMethods.DeleteFile("comment", fileId, userId);
+               await _incidentsMethods.DeleteFileAsync("comment", fileId, userId);
                 rootPath = _hostingEnvironment.ContentRootPath + "\\Attachments\\Incidents\\" + incidentId + "\\Comments\\" + commentId;
                // rootPath = System.Web.HttpContext.Current.Server.MapPath("~/Attachments/Incidents/" + incidentId + "/Comments/" + commentId);
             }
             else
             {
-                _incidentsMethods.DeleteFile("incident", fileId, userId);
+                await _incidentsMethods.DeleteFileAsync("incident", fileId, userId);
                 rootPath = _hostingEnvironment.ContentRootPath + "\\Attachments\\Incidents\\" + incidentId;
                 //rootPath = System.Web.HttpContext.Current.Server.MapPath("~/Attachments/Incidents/" + incidentId);
             }
@@ -221,9 +221,9 @@ namespace IM_Core.ApiControllers
 
         [HttpGet("DeleteComment")]
         [Authorize]
-        public string DeleteComment(string commentId, string incidentId, string userId)
+        public async Task<string> DeleteCommentAsync(string commentId, string incidentId, string userId)
         {
-            _incidentsMethods.DeleteComment(commentId, userId);
+            await _incidentsMethods.DeleteCommentAsync(commentId, userId);
             string path = _hostingEnvironment.ContentRootPath + "\\Attachments\\Incidents\\" + incidentId + "\\Comments\\" + commentId;
 
             if (Directory.Exists(@path))
@@ -238,73 +238,73 @@ namespace IM_Core.ApiControllers
 
         [HttpGet]
         [Authorize]
-        public List<Incident> GetAllIncidents()
+        public async Task<List<Incident>> GetAllIncidentsAsync()
         {
-            return _incidentsMethods.GetAllIncidents();
+            return await _incidentsMethods.GetAllIncidents();
         }
 
         [HttpPost("UpdateIncident")]
         [Authorize]
-        public void UpdateIncident([FromBody] IncidentUpdate IU) //IU = IncidentUpdate, 
+        public async Task UpdateIncidentAsync([FromBody] IncidentUpdate IU) //IU = IncidentUpdate, 
         {
-            _incidentsMethods.UpdateIncident(IU.IncidentId, IU.Parameter, IU.Value, IU.UserId);
+            await _incidentsMethods.UpdateIncidentAsync(IU.IncidentId, IU.Parameter, IU.Value, IU.UserId);
         }
 
         [HttpPost("UpdateComment")]
         [Authorize]
-        public void UpdateComment([FromBody] Comment C)
+        public async Task UpdateCommentAsync([FromBody] Comment C)
         {
-            _incidentsMethods.UpdateComment(C.Id, C.CommentText, C.UserId);
+            await _incidentsMethods.UpdateCommentAsync(C.Id, C.CommentText, C.UserId);
         }
 
          [Authorize]
         [HttpGet("GetIncidentsWithPage")]        
-        public IncidentsWithPage GetIncidentsWithPage(int PageSize, int PageNumber, string SortBy, string SortDirection, string Search)
+        public async Task<IncidentsWithPage> GetIncidentsWithPageAsync(int PageSize, int PageNumber, string SortBy, string SortDirection, string Search)
         {
              //Thread.Sleep(000);
-            return _incidentsMethods.GetIncidentsPage(PageSize, PageNumber, SortBy, SortDirection, Search);
+            return await _incidentsMethods.GetIncidentsPageAsync(PageSize, PageNumber, SortBy, SortDirection, Search);
         }
 
         [HttpGet("GetIncidentsWithPageTest")]
-        public object GetIncidentsWithPageTest(int PageSize, int PageNumber, string SortBy, string SortDirection, string Search)
+        public async Task<object> GetIncidentsWithPageTestAsync(int PageSize, int PageNumber, string SortBy, string SortDirection, string Search)
         {
             //Thread.Sleep(000);
-            return _incidentsMethods.GetIncidentsPageTest(PageSize, PageNumber, SortBy, SortDirection, Search);
+            return await _incidentsMethods.GetIncidentsPageTestAsync(PageSize, PageNumber, SortBy, SortDirection, Search);
         }
 
         [Authorize]
         [HttpGet("KPI")]       
-        public object GetKPI(string UserId)
+        public async Task<object> GetKPIAsync(string UserId)
         {            
-            return _incidentsMethods.KPI(UserId);
+            return await _incidentsMethods.KPIAsync(UserId);
         }
 
         [Authorize]
         [HttpGet("OverallWidget")]
-        public object GetOverallWidget (string UserId)
+        public async Task<object> GetOverallWidgetAsync (string UserId)
         {            
-            return _incidentsMethods.OverallWidget();
+            return await _incidentsMethods.OverallWidgetAsync();
         }
 
         [Authorize]
         [HttpGet("Last5Incidents")]
-        public object GetLast5Incidents(string UserId)
+        public async Task<object> GetLast5IncidentsAsync(string UserId)
         {
-            return _incidentsMethods.Last5Incidents();
+            return await _incidentsMethods.Last5IncidentsAsync();
         }
 
         [Authorize]
         [HttpGet("Oldest5UnresolvedIncidents")]
-        public object GetOldest5UnresolvedIncidents(string UserId)
+        public async Task<object> GetOldest5UnresolvedIncidentsAsync(string UserId)
         {
-            return _incidentsMethods.Oldest5UnresolvedIncidents();
+            return await _incidentsMethods.Oldest5UnresolvedIncidentsAsync();
         }
 
         [Authorize]
         [HttpGet("MostAssignedToUsersIncidents")]
-        public object GetMostAssignedToUsersIncidents(string UserId)
+        public async Task<object> GetMostAssignedToUsersIncidentsAsync(string UserId)
         {
-            return _incidentsMethods.MostAssignedToUsersIncidents();
+            return await _incidentsMethods.MostAssignedToUsersIncidentsAsync();
         }
 
 

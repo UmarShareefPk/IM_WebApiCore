@@ -4,12 +4,13 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using System;
 using IM.Models;
 
+
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
 public class AuthorizeAttribute : Attribute, IAuthorizationFilter
 {
-    public void OnAuthorization(AuthorizationFilterContext context)
+    public  void OnAuthorization(AuthorizationFilterContext context)
     {
-        var user = (User)context.HttpContext.Items["User"];
+        var user =  (User)context.HttpContext.Items["User"];
         if (user == null)
         {
             // not logged in

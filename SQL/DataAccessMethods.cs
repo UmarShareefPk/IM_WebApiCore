@@ -7,6 +7,7 @@ using System.Web;
 using Microsoft.Data.SqlClient;
 using WebApi.Options;
 using Microsoft.Extensions.Options;
+using System.Threading.Tasks;
 
 namespace IM.SQL
 {
@@ -15,6 +16,11 @@ namespace IM.SQL
         public DataSet Ds { get; set; }
         public bool Error { get; set; }
         public string ErrorMsg { get; set; }
+
+        public static explicit operator DbResponse(Task<object> v)
+        {
+            throw new NotImplementedException();
+        }
     }
     public class DataAccessMethods
     {
@@ -25,7 +31,7 @@ namespace IM.SQL
             _connectionString = connectionStringOptions.Value;
 
         }
-        public DbResponse ExecuteProcedure(string procedureName, SortedList<string, object> parameters)
+        public async Task<DbResponse> ExecuteProcedureAsync(string procedureName, SortedList<string, object> parameters)
         {          
             var ds = new DataSet();
             //var con = new SqlConnection(ConfigurationManager.ConnectionStrings["IMConString"].ConnectionString);
@@ -44,7 +50,9 @@ namespace IM.SQL
             var da = new SqlDataAdapter(cmd);
             try
             {
-                da.Fill(ds);
+                // da.Fill(ds);
+                await Task.Run(() => da.Fill(ds));
+
             }
             catch(Exception ex)
             {
