@@ -21,11 +21,11 @@ namespace IM_Core.ApiControllers
     [ApiController]
     public class IncidentsController : ControllerBase
     {
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IWebHostEnvironment _webHostEnvironment;       
         private readonly IncidentsMethods _incidentsMethods;
-        public IncidentsController(IHostingEnvironment hostingEnvironment, IncidentsMethods incidentsMethods)
+        public IncidentsController(IWebHostEnvironment webHostEnvironment, IncidentsMethods incidentsMethods)
         {
-            _hostingEnvironment = hostingEnvironment;
+            _webHostEnvironment = webHostEnvironment;
             _incidentsMethods = incidentsMethods;
         }
 
@@ -88,7 +88,7 @@ namespace IM_Core.ApiControllers
             {               
                 foreach (var formFile in HttpContext.Request.Form.Files)
                 {
-                    string folder = _hostingEnvironment.ContentRootPath + "\\Attachments\\Incidents\\" + incident_Id;
+                    string folder = _webHostEnvironment.ContentRootPath + "\\Attachments\\Incidents\\" + incident_Id;
                     Directory.CreateDirectory(folder);
                     if (formFile.Length > 0)
                     {
@@ -135,7 +135,7 @@ namespace IM_Core.ApiControllers
             {
                 foreach (var formFile in HttpContext.Request.Form.Files)
                 {
-                    string folder = _hostingEnvironment.ContentRootPath + "\\Attachments\\Incidents\\" + comment.IncidentId + "\\Comments\\" + comment_Id;
+                    string folder = _webHostEnvironment.ContentRootPath + "\\Attachments\\Incidents\\" + comment.IncidentId + "\\Comments\\" + comment_Id;
                     Directory.CreateDirectory(folder);
                     if (formFile.Length > 0)
                     {
@@ -176,11 +176,11 @@ namespace IM_Core.ApiControllers
             var rootPath = "";
             if (type.ToLower() == "comment")
             {
-                rootPath = _hostingEnvironment.ContentRootPath + "\\Attachments\\Incidents\\" + incidentId + "\\Comments\\" + commentId;
+                rootPath = _webHostEnvironment.ContentRootPath + "\\Attachments\\Incidents\\" + incidentId + "\\Comments\\" + commentId;
             }
             else
             {
-                rootPath = _hostingEnvironment.ContentRootPath + "\\Attachments\\Incidents\\" + incidentId;
+                rootPath = _webHostEnvironment.ContentRootPath + "\\Attachments\\Incidents\\" + incidentId;
             }
             var fileFullPath = Path.Combine(rootPath, filename);
 
@@ -198,13 +198,13 @@ namespace IM_Core.ApiControllers
             if (type.ToLower() == "comment")
             {
                await _incidentsMethods.DeleteFileAsync("comment", fileId, userId);
-                rootPath = _hostingEnvironment.ContentRootPath + "\\Attachments\\Incidents\\" + incidentId + "\\Comments\\" + commentId;
+                rootPath = _webHostEnvironment.ContentRootPath + "\\Attachments\\Incidents\\" + incidentId + "\\Comments\\" + commentId;
                // rootPath = System.Web.HttpContext.Current.Server.MapPath("~/Attachments/Incidents/" + incidentId + "/Comments/" + commentId);
             }
             else
             {
                 await _incidentsMethods.DeleteFileAsync("incident", fileId, userId);
-                rootPath = _hostingEnvironment.ContentRootPath + "\\Attachments\\Incidents\\" + incidentId;
+                rootPath = _webHostEnvironment.ContentRootPath + "\\Attachments\\Incidents\\" + incidentId;
                 //rootPath = System.Web.HttpContext.Current.Server.MapPath("~/Attachments/Incidents/" + incidentId);
             }
 
@@ -224,7 +224,7 @@ namespace IM_Core.ApiControllers
         public async Task<string> DeleteCommentAsync(string commentId, string incidentId, string userId)
         {
             await _incidentsMethods.DeleteCommentAsync(commentId, userId);
-            string path = _hostingEnvironment.ContentRootPath + "\\Attachments\\Incidents\\" + incidentId + "\\Comments\\" + commentId;
+            string path = _webHostEnvironment.ContentRootPath + "\\Attachments\\Incidents\\" + incidentId + "\\Comments\\" + commentId;
 
             if (Directory.Exists(@path))
             {

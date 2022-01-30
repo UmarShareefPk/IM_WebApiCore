@@ -20,12 +20,12 @@ namespace IM_Core.ApiControllers
     [ApiController]
     public class MessagesController : ControllerBase
     {
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly MessagesMethods _messagesMethods;
 
-        public MessagesController(IHostingEnvironment hostingEnvironment, MessagesMethods messagesMethods)
+        public MessagesController(IWebHostEnvironment webHostEnvironmentt, MessagesMethods messagesMethods)
         {
-            _hostingEnvironment = hostingEnvironment;
+            _webHostEnvironment = webHostEnvironmentt;
             _messagesMethods = messagesMethods;
         }
 

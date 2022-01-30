@@ -17,13 +17,13 @@ namespace IM_Core.ApiControllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly UsersMethods _usersMethods;
+        private readonly UsersMethods _usersMethods;       
 
-        private readonly IHostingEnvironment _hostingEnvironment;
-        public UsersController(IHostingEnvironment hostingEnvironment, UsersMethods usersMethods)
-        {
-            _hostingEnvironment = hostingEnvironment;
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        public UsersController(UsersMethods usersMethods, IWebHostEnvironment webHostEnvironment)
+        {        
             _usersMethods = usersMethods;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         [HttpPost("authenticate")]
@@ -110,7 +110,8 @@ namespace IM_Core.ApiControllers
                 {
                     if (formFile.Length > 0)
                     {
-                        string folder = _hostingEnvironment.ContentRootPath + "\\Attachments\\Users\\" + user_Id;
+                        
+                        string folder = _webHostEnvironment.ContentRootPath + "\\Attachments\\Users\\" + user_Id;
                         Directory.CreateDirectory(folder);
                         string path = folder + "\\" + formFile.FileName;
 
@@ -122,6 +123,7 @@ namespace IM_Core.ApiControllers
                 }
 
             }//end of if count > 0
+            
             return Ok("New User has been added.");
         }
 
