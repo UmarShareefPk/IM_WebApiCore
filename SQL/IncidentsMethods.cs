@@ -1,4 +1,5 @@
 ﻿using IM.Models;
+using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -296,7 +297,50 @@ namespace IM.SQL
             return incidents;
         }
 
-        public async Task<IncidentsWithPage> GetIncidentsPageAsync(int pageSize , int pageNumber, string sortBy, string sortDirection, string Serach)
+        //public async Task<IncidentsWithPage> GetIncidentsPageAsync(int pageSize , int pageNumber, string sortBy, string sortDirection, string Serach)
+        //{
+        //    var dt = new DataTable();
+        //    var parameters = new SortedList<string, object>()
+        //    {
+        //         { "PageSize" , pageSize},
+        //         { "PageNumber" , pageNumber},
+        //         { "SortBy" , sortBy},
+        //         { "SortDirection" , sortDirection},
+        //         { "SearchText" , Serach},
+        //    };
+
+        //    var dbResponse = await dbAccess.ExecuteProcedureAsync("GetIncidentsPage", parameters);
+        //    var ds = dbResponse.Ds;
+
+        //    if (ds == null || ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0)
+        //        return null;
+
+        //    dt = ds.Tables[1];
+        //    int total_incidents = int.Parse(ds.Tables[0].Rows[0][0].ToString());
+
+        //    var incidents = (from rw in dt.AsEnumerable()
+        //                     select new Incident()
+        //                     {
+        //                         Id = rw["Id"].ToString(),
+        //                         CreatedBy = rw["CreatedBy"].ToString(),
+        //                         AssignedTo = rw["AssignedTo"].ToString(),
+        //                         CreatedAT = DateTime.Parse(rw["CreatedAT"].ToString()),
+        //                         Title = rw["Title"].ToString(),
+        //                         Description = rw["Description"].ToString(),
+        //                         AdditionalData = rw["AdditionalData"].ToString(),                                
+        //                         StartTime = DateTime.Parse(rw["StartTime"].ToString()),
+        //                         DueDate = DateTime.Parse(rw["DueDate"].ToString()),
+        //                         Status = rw["Status"].ToString()
+        //                     }).ToList();
+
+        //    return new IncidentsWithPage 
+        //    { 
+        //        Total_Incidents = total_incidents,
+        //        Incidents = incidents
+        //    };
+        //}
+
+        public async Task<object> GetIncidentsPageAsync(int pageSize, int pageNumber, string sortBy, string sortDirection, string Serach)
         {
             var dt = new DataTable();
             var parameters = new SortedList<string, object>()
@@ -308,35 +352,40 @@ namespace IM.SQL
                  { "SearchText" , Serach},
             };
 
-            var dbResponse = await dbAccess.ExecuteProcedureAsync("GetIncidentsPage", parameters);
-            var ds = dbResponse.Ds;
+            return await dbAccess.ExecuteProcedureAsync2("GetIncidentsPage", parameters, SetIncidentPageAsync);          
+        }
 
-            if (ds == null || ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0)
-                return null;
+        public async Task<object> SetIncidentPageAsync(SqlDataReader reader)
+        {
+            List<Incident> incidents = new List<Incident>();
+            await reader.ReadAsync();
+            int total_incidents = int.Parse(reader[0].ToString());
 
-            dt = ds.Tables[1];
-            int total_incidents = int.Parse(ds.Tables[0].Rows[0][0].ToString());
+            await reader.NextResultAsync();
+            while (await reader.ReadAsync())
+            {
+                Incident incident = new Incident()
+                {
+                    Id = reader["Id"].ToString(),
+                    CreatedBy = reader["CreatedBy"].ToString(),
+                    AssignedTo = reader["AssignedTo"].ToString(),
+                    CreatedAT = DateTime.Parse(reader["CreatedAT"].ToString()),
+                    Title = reader["Title"].ToString(),
+                    Description = reader["Description"].ToString(),
+                    AdditionalData = reader["AdditionalData"].ToString(),
+                    StartTime = DateTime.Parse(reader["StartTime"].ToString()),
+                    DueDate = DateTime.Parse(reader["DueDate"].ToString()),
+                    Status = reader["Status"].ToString()
+                };
+                incidents.Add(incident);
+            }
 
-            var incidents = (from rw in dt.AsEnumerable()
-                             select new Incident()
-                             {
-                                 Id = rw["Id"].ToString(),
-                                 CreatedBy = rw["CreatedBy"].ToString(),
-                                 AssignedTo = rw["AssignedTo"].ToString(),
-                                 CreatedAT = DateTime.Parse(rw["CreatedAT"].ToString()),
-                                 Title = rw["Title"].ToString(),
-                                 Description = rw["Description"].ToString(),
-                                 AdditionalData = rw["AdditionalData"].ToString(),                                
-                                 StartTime = DateTime.Parse(rw["StartTime"].ToString()),
-                                 DueDate = DateTime.Parse(rw["DueDate"].ToString()),
-                                 Status = rw["Status"].ToString()
-                             }).ToList();
-
-            return new IncidentsWithPage 
-            { 
+            return new IncidentsWithPage
+            {
                 Total_Incidents = total_incidents,
                 Incidents = incidents
             };
+
         }
 
         public async Task<object> GetIncidentsPageTestAsync(int pageSize, int pageNumber, string sortBy, string sortDirection, string Serach)

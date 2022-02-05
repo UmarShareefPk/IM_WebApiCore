@@ -67,7 +67,7 @@ namespace IM_Core.ApiControllers
         [Authorize]
         public async Task<IActionResult> GetConversationsByUser(string UserId)
         {
-            var result = _messagesMethods.GetConversationsByUserAsync(UserId);
+            var result = await _messagesMethods.GetConversationsByUserAsync(UserId);
 
             if (result.GetType() == typeof(DbResponse))
             {
@@ -83,7 +83,7 @@ namespace IM_Core.ApiControllers
         [Authorize]
         public async Task<IActionResult> GetMessagesByConversations(string ConversationId)
         {
-            var result = _messagesMethods.GetMessagesByConversationsAsync(ConversationId);
+            var result = await _messagesMethods.GetMessagesByConversationsAsync(ConversationId);
 
             if (result.GetType() == typeof(DbResponse))
             {
@@ -99,7 +99,7 @@ namespace IM_Core.ApiControllers
         [Authorize]
         public async Task<IActionResult> GetMessagesByUser(string UserId)
         {        
-            var result = _messagesMethods.GetMessagesByUserAsync(UserId);
+            var result = await _messagesMethods.GetMessagesByUserAsync(UserId);
 
             if (result.GetType() == typeof(DbResponse))
             {

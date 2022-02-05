@@ -259,10 +259,11 @@ namespace IM_Core.ApiControllers
 
          [Authorize]
         [HttpGet("GetIncidentsWithPage")]        
-        public async Task<IncidentsWithPage> GetIncidentsWithPageAsync(int PageSize, int PageNumber, string SortBy, string SortDirection, string Search)
+        public async Task<object> GetIncidentsWithPageAsync(int PageSize, int PageNumber, string SortBy, string SortDirection, string Search)
         {
              //Thread.Sleep(000);
-            return await _incidentsMethods.GetIncidentsPageAsync(PageSize, PageNumber, SortBy, SortDirection, Search);
+            var response =  await _incidentsMethods.GetIncidentsPageAsync(PageSize, PageNumber, SortBy, SortDirection, Search);
+            return response;        
         }
 
         [HttpGet("GetIncidentsWithPageTest")]
