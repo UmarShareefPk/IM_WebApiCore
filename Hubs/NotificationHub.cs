@@ -42,7 +42,7 @@ namespace IM.Hubs
         {
             string hubId = await _usersMethods.GetHubIdByUserIdAsync(userId);
 
-           await Clients.Client(hubId).SendAsync("UpdateConversation", conversationId);
+           await Clients.Client(hubId).SendAsync("ReceiveNewMessage", conversationId);
 
         }
 

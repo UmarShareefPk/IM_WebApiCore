@@ -272,6 +272,8 @@ namespace IM.SQL
             var dbResponse = await dbAccess.ExecuteProcedureAsync("GetAllIncidents", parameters);
             var ds =  dbResponse.Ds;
 
+         //   ds.Tables[0].AsEnumerable().Where(dr => dr.HasErrors);
+
             if (ds == null || ds.Tables.Count == 0 || ds.Tables[0].Rows.Count == 0)
                 return null;
 

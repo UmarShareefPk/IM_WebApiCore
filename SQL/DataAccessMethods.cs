@@ -32,7 +32,7 @@ namespace IM.SQL
             _connectionString = connectionStringOptions.Value;
 
         }
-        public async Task<DbResponse> ExecuteProcedureAsync(string procedureName, SortedList<string, object> parameters)
+        public async Task<DbResponse> ExecuteProcedureAsyncold(string procedureName, SortedList<string, object> parameters)
         {          
             var ds = new DataSet();
             //var con = new SqlConnection(ConfigurationManager.ConnectionStrings["IMConString"].ConnectionString);
@@ -68,6 +68,41 @@ namespace IM.SQL
             return new DbResponse { Ds = ds, Error = false , ErrorMsg = null};
         }
 
+        public async Task<DbResponse> ExecuteProcedureAsync(string procedureName, SortedList<string, object> parameters)
+        {
+            var ds = new DataSet();
+            try
+            {
+                using (SqlConnection con = new SqlConnection(_connectionString.Main))
+                {
+                    using (SqlCommand cmd = new SqlCommand(procedureName, con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        if (parameters != null)
+                        {
+                            foreach (string k in parameters.Keys)
+                                cmd.Parameters.AddWithValue(k, parameters[k]);
+                        }
+
+                        await con.OpenAsync();
+                        var dr = await cmd.ExecuteReaderAsync();
+                     
+
+                        while (!dr.IsClosed)
+                            ds.Tables.Add().Load(dr);
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return new DbResponse { Ds = null, Error = true, ErrorMsg = ex.Message };
+            }            
+
+            return new DbResponse { Ds = ds, Error = false, ErrorMsg = null };
+        }
+
         public async Task<object> ExecuteProcedureAsync2(string procedureName, SortedList<string, object> parameters, Func<SqlDataReader, Task<object>> returnData)
         {
 
@@ -85,8 +120,12 @@ namespace IM.SQL
                                 cmd.Parameters.AddWithValue(k, parameters[k]);
                         }
 
-                        con.Open();
+                        await con.OpenAsync();
                         var dr = await cmd.ExecuteReaderAsync();
+                        var ds = new DataSet();
+
+                        //while (!dr.IsClosed)
+                        //   ds.Tables.Add().Load(dr);
 
                         return await returnData(dr);
                         //dr.NextResult();

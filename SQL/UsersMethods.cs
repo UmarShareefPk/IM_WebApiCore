@@ -59,9 +59,11 @@ namespace IM.SQL
                                  Password = rw["Password"].ToString(),
                                  CreateDate = DateTime.Parse(rw["CreateDate"].ToString()),
                                  LastLogin = DateTime.Now // DateTime.Parse(rw["LastLogin"].ToString())
-                             }).ToList();
+                             }).ToList().First();
 
-            return userLogin.First();
+            userLogin.UnreadConversationCount = int.Parse(ds.Tables[2].Rows[0][0].ToString());
+
+            return userLogin;
         }
 
         public async Task<UserLogin> AuthenticateAsync(AuthenticateRequest model)
@@ -143,6 +145,15 @@ namespace IM.SQL
             }
 
             dt = dbResponse.Ds.Tables[0];
+
+            //   var ss = dt.AsEnumerable().Where(dr => dr["FirstName"].ToString() == "Umar");
+            var ss = dt.AsEnumerable().Where((dr) => { 
+                                                    if (dr["FirstName"].ToString() == "Umar") 
+                                                        return true; 
+                                                    else
+                                                 return false;
+            }
+            );
 
             var Users = (from rw in dt.AsEnumerable()
                          select new User()
@@ -239,7 +250,7 @@ namespace IM.SQL
             var dt = new DataTable();
             var parameters = new SortedList<string, object>()
             {
-                 { "IncidentId" , userId}
+                 { "UserId" , userId}
             };
             var dbResponse = await dbAccess.ExecuteProcedureAsync("GetHubIdByUserId", parameters);
             var ds = dbResponse.Ds;

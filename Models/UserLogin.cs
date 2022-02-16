@@ -14,6 +14,7 @@ namespace IM.Models
         public string Token { get; set; }
         public DateTime CreateDate { get; set; }
         public DateTime LastLogin { get; set; }
+        public int UnreadConversationCount { get; set; }=0;
 
     }
 }
