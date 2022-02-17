@@ -35,6 +35,7 @@ namespace IM.SQL
             return (from rw in dbResponse.Ds.Tables[0].AsEnumerable()
                          select new Message()
                          {
+                             ConversationId= rw["ConversationId"].ToString(),
                              Id = rw["Id"].ToString(),
                              From = rw["From"].ToString(),
                              To = rw["To"].ToString(),
