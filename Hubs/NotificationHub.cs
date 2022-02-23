@@ -38,11 +38,18 @@ namespace IM.Hubs
         }
 
 
-        public async Task SendMessageAsync(string conversationId, string userId, object newMessage)
+        public async Task SendMessageAsync(string conversationId, string userId, object newMessage, bool isNewConversation)
         {
             string hubId = await _usersMethods.GetHubIdByUserIdAsync(userId);
 
-           await Clients.Client(hubId).SendAsync("ReceiveNewMessage", newMessage);
+            if (isNewConversation)
+            {
+                await Clients.Client(hubId).SendAsync("ReceiveNewConversation", newMessage);
+            }            
+            else
+            {
+                await Clients.Client(hubId).SendAsync("ReceiveNewMessage", newMessage);
+            }                
 
         }
 

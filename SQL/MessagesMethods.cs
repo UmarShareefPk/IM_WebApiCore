@@ -32,18 +32,38 @@ namespace IM.SQL
             if (dbResponse.Error)
                 return dbResponse;
 
-            return (from rw in dbResponse.Ds.Tables[0].AsEnumerable()
-                         select new Message()
-                         {
-                             ConversationId= rw["ConversationId"].ToString(),
-                             Id = rw["Id"].ToString(),
-                             From = rw["From"].ToString(),
-                             To = rw["To"].ToString(),
-                             Date = DateTime.Parse(rw["Date"].ToString()),
-                             MessageText = rw["MessageText"].ToString(),
-                             Status = rw["Status"].ToString(),
-                             Deleted = bool.Parse(rw["Deleted"].ToString()),
-                         }).First();
+            List<object> messages = new List<object>();
+            messages.Add((from rw in dbResponse.Ds.Tables[0].AsEnumerable()
+                          select new Message()
+                          {
+                              ConversationId = rw["ConversationId"].ToString(),
+                              Id = rw["Id"].ToString(),
+                              From = rw["From"].ToString(),
+                              To = rw["To"].ToString(),
+                              Date = DateTime.Parse(rw["Date"].ToString()),
+                              MessageText = rw["MessageText"].ToString(),
+                              Status = rw["Status"].ToString(),
+                              Deleted = bool.Parse(rw["Deleted"].ToString()),
+                          }).First());
+            try
+            {
+                messages.Add((from rw in dbResponse.Ds.Tables[1].AsEnumerable()
+                              select new Conversation()
+                              {
+                                  Id = rw["Id"].ToString(),
+                                  User1 = rw["User1"].ToString(),
+                                  User2 = rw["User2"].ToString(),
+                                  LastMessageTime = DateTime.Parse(rw["LastMessageTime"].ToString()),
+                                  LastMessage = rw["LastMessage"].ToString(),
+                                  UnReadCount = int.Parse(rw["UnreadCount"].ToString())
+                              }).First());
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            return messages;
         }
 
 
@@ -70,6 +90,37 @@ namespace IM.SQL
                         UnReadCount = int.Parse(rw["UnreadCount"].ToString())
                     }).ToList();
         }
+
+        public async Task<object> DeleteConversationAsync(string ConversationId)
+        {
+            var parameters = new SortedList<string, object>()
+            {
+                  { "ConversationId" , ConversationId },
+            };
+
+            var dbResponse = await dbAccess.ExecuteProcedureAsync("DeleteConversation", parameters);
+
+            if (dbResponse.Error)
+                return dbResponse;
+
+            return true;
+        }
+
+        public async Task<object> DeleteMessageAsync(string MessageId)
+        {
+            var parameters = new SortedList<string, object>()
+            {
+                  { "MessageId" , MessageId },
+            };
+
+            var dbResponse = await dbAccess.ExecuteProcedureAsync("DeleteMessage", parameters);
+
+            if (dbResponse.Error)
+                return dbResponse;
+
+            return true;
+        }
+
 
         public async Task<object> GetMessagesByConversationsAsync(string ConversationId)
         {
