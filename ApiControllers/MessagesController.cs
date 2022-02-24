@@ -84,13 +84,12 @@ namespace IM_Core.ApiControllers
                 return StatusCode(500, new { message = error.ErrorMsg });
             }
 
-
             return Ok();
         }
 
-        [HttpGet("DeleteMessage")]
+        [HttpPost("DeleteMessage")]
         [Authorize]
-        public async Task<IActionResult> DeletMessage(string MessageId)
+        public async Task<IActionResult> DeletMessage([FromQuery]string MessageId)
         {
             var result = await _messagesMethods.DeleteMessageAsync(MessageId);
 
@@ -99,7 +98,6 @@ namespace IM_Core.ApiControllers
                 var error = (DbResponse)result;
                 return StatusCode(500, new { message = error.ErrorMsg });
             }
-
 
             return Ok();
         }
