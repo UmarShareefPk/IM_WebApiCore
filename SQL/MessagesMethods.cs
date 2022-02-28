@@ -142,7 +142,7 @@ namespace IM.SQL
                         To = rw["To"].ToString(),
                         Date = DateTime.Parse(rw["Date"].ToString()),
                         MessageText = rw["MessageText"].ToString(),
-                        Status = rw["Status"].ToString(),
+                        Status = rw["Status"].ToString().Trim(),
                         Deleted = bool.Parse(rw["Deleted"].ToString()),
                         ConversationId = rw["ConversationId"].ToString()
                     }).ToList();
