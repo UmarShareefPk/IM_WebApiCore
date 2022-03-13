@@ -72,7 +72,7 @@ namespace IM_Core.ApiControllers
             return Ok(result);
         }
 
-        [HttpGet("DeleteConversation")]
+        [HttpPost("DeleteConversation")]
         [Authorize]
         public async Task<IActionResult> DeleteConversation(string ConversationId)
         {
@@ -101,6 +101,22 @@ namespace IM_Core.ApiControllers
 
             return Ok();
         }
+
+        [HttpPost("ChangeMessageStatus")]
+        [Authorize]
+        public async Task<IActionResult> ChangeMessageStatus(string MessageId, string Status)
+        {
+            var result = await _messagesMethods.ChangeMessageStatusAsync(MessageId, Status);
+
+            if (result.GetType() == typeof(DbResponse))
+            {
+                var error = (DbResponse)result;
+                return StatusCode(500, new { message = error.ErrorMsg });
+            }
+
+            return Ok();
+        }
+
 
         [HttpGet("MessagesByConversations")]
         [Authorize]

@@ -121,6 +121,22 @@ namespace IM.SQL
             return true;
         }
 
+        public async Task<object> ChangeMessageStatusAsync(string MessageId, string Status)
+        {
+            var parameters = new SortedList<string, object>()
+            {
+                  { "MessageId" , MessageId },
+                  { "Status" , Status },
+            };
+
+            var dbResponse = await dbAccess.ExecuteProcedureAsync("ChangeMessageStatus", parameters);
+
+            if (dbResponse.Error)
+                return dbResponse;
+
+            return true;
+        }
+
 
         public async Task<object> GetMessagesByConversationsAsync(string ConversationId)
         {
