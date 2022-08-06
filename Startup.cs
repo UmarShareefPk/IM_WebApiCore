@@ -63,7 +63,7 @@ namespace IM_Core
                             "http://localhost:3000", 
                             "http://localhost:4200",
                             "http://localhost",
-                            "http://localhost/ImAngular"
+                            "http://localhost/ImAngular",
                             "https://calm-mud-02aada210.1.azurestaticapps.net",
                             "https://calm-mud-02aada210.1.azurestaticapps.net/ImReact"
                             )
