@@ -64,8 +64,8 @@ namespace IM_Core
                             "http://localhost:4200",
                             "http://localhost",
                             "http://localhost/ImAngular"
-                           // "http://localhost:4200",
-                            //"http://localhost:4200"
+                            "https://calm-mud-02aada210.1.azurestaticapps.net",
+                            "https://calm-mud-02aada210.1.azurestaticapps.net/ImReact"
                             )
                         .AllowCredentials();
                 });
