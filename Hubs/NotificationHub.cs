@@ -31,9 +31,20 @@ namespace IM.Hubs
         public async Task SendIncidentUpdateAsync(string incidentId , string userId)
         {
             List<string> hubIds = await _usersMethods.GetHubIdsAsync(incidentId , userId);
+
+            await _usersMethods.LogSignalRAsync("Hub function called");
+
             foreach(string id in hubIds)
             {
-               await Clients.Client(id).SendAsync("UpdateNotifications", incidentId);
+                try
+                {
+                    await Clients.Client(id).SendAsync("UpdateNotifications", incidentId);
+                    await _usersMethods.LogSignalRAsync("No Error");
+                }
+                catch(Exception ex)
+                {
+                    await _usersMethods.LogSignalRAsync("Failed:" + ex.Message);
+                }
             }
         }
 

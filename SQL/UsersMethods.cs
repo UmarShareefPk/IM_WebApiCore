@@ -120,6 +120,18 @@ namespace IM.SQL
             return dbResponse;
         }
 
+        public async Task<DbResponse> LogSignalRAsync(string msg)
+        {
+            var dt = new DataTable();
+            var parameters = new SortedList<string, object>()
+            {
+                  { "msg" , msg },
+             };
+
+            var dbResponse = await dbAccess.ExecuteProcedureAsync("LogSignalR", parameters);
+            return dbResponse;
+        }
+
         public async Task<List<User>> GetAllUsersAsync()
         {
             var dt = new DataTable();
