@@ -28,7 +28,7 @@ namespace IM.Hubs
 
         }
 
-        public async Task SendIncidentUpdateAsync(string incidentId , string userId)
+        public async Task SendIncidentUpdate(string incidentId , string userId)
         {
             List<string> hubIds = await _usersMethods.GetHubIdsAsync(incidentId , userId);
 
@@ -49,7 +49,7 @@ namespace IM.Hubs
         }
 
 
-        public async Task SendMessageAsync(string conversationId, string userId, object newMessage, bool isNewConversation)
+        public async Task SendMessage(string conversationId, string userId, object newMessage, bool isNewConversation)
         {
             string hubId = await _usersMethods.GetHubIdByUserIdAsync(userId);
 

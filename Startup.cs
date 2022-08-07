@@ -36,10 +36,14 @@ namespace IM_Core
                .Bind(Configuration.GetSection(ConnectionStringOptions.ConnectionStringName))
                .ValidateDataAnnotations();
 
+
+            services.AddSignalR();
+
             services.AddScoped(typeof(DataAccessMethods));
             services.AddScoped(typeof(UsersMethods));
             services.AddScoped(typeof(IncidentsMethods));
             services.AddScoped(typeof(MessagesMethods));
+
 
             services.AddMvc(setupAction => {
                 setupAction.EnableEndpointRouting = false;
@@ -49,7 +53,7 @@ namespace IM_Core
             })
              .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
-            services.AddSignalR();
+       
 
             services.AddCors(options =>
             {
@@ -60,15 +64,14 @@ namespace IM_Core
                         //.AllowAnyOrigin()
                         .WithOrigins(
                             "https://localhost:44338", 
-                            "http://localhost:3000", 
+                            "http://localhost:3000",
                             "http://localhost:4200",
                             "http://localhost",
                             "http://localhost/ImAngular",
                             "https://calm-mud-02aada210.1.azurestaticapps.net",
                             "https://calm-mud-02aada210.1.azurestaticapps.net/ImReact"
                             )
-                        .AllowCredentials()
-                        .SetIsOriginAllowed((host) => true);
+                        .AllowCredentials();
                 });
             });
 
@@ -95,11 +98,8 @@ namespace IM_Core
             //    .AllowAnyHeader());
             // custom jwt auth middleware
             app.UseMiddleware<JwtMiddleware>();
-          
 
             app.UseCors("ClientPermission");
-
-            app.UseWebSockets();
 
             app.UseEndpoints(endpoints =>
             {
