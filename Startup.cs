@@ -66,7 +66,7 @@ namespace IM_Core
                             "https://localhost:44338", 
                             "http://localhost:3000",
                             "http://localhost:4200",
-                            "https://lively-bush-0d9b77d10.1.azurestaticapps.net/",
+                            "https://lively-bush-0d9b77d10.1.azurestaticapps.net",
                             "http://localhost/ImAngular",
                             "https://calm-mud-02aada210.1.azurestaticapps.net",
                             "https://calm-mud-02aada210.1.azurestaticapps.net/ImReact"                           
