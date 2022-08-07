@@ -49,7 +49,7 @@ namespace IM.Hubs
         }
 
 
-        public async Task SendMessage(string conversationId, string userId, object newMessage, bool isNewConversation)
+        public async Task SendMessageAsync(string conversationId, string userId, object newMessage, bool isNewConversation)
         {
             string hubId = await _usersMethods.GetHubIdByUserIdAsync(userId);
 
