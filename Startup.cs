@@ -67,7 +67,8 @@ namespace IM_Core
                             "https://calm-mud-02aada210.1.azurestaticapps.net",
                             "https://calm-mud-02aada210.1.azurestaticapps.net/ImReact"
                             )
-                        .AllowCredentials();
+                        .AllowCredentials()
+                        .SetIsOriginAllowed((host) => true);
                 });
             });
 
