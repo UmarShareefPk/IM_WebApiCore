@@ -94,8 +94,11 @@ namespace IM_Core
             //    .AllowAnyHeader());
             // custom jwt auth middleware
             app.UseMiddleware<JwtMiddleware>();
+          
 
             app.UseCors("ClientPermission");
+
+            app.UseWebSockets();
 
             app.UseEndpoints(endpoints =>
             {
