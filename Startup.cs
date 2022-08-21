@@ -69,7 +69,7 @@ namespace IM_Core
                             "https://lively-bush-0d9b77d10.1.azurestaticapps.net",
                             "http://localhost/ImAngular",
                             "https://calm-mud-02aada210.1.azurestaticapps.net",
-                            "https://calm-mud-02aada210.1.azurestaticapps.net/ImReact"                           
+                            "https://localhost:7135"                           
                             )
                         .AllowCredentials();
                 });
