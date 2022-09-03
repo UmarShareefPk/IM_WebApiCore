@@ -66,10 +66,11 @@ namespace IM_Core
                             "https://localhost:44338", 
                             "http://localhost:3000",
                             "http://localhost:4200",
-                            "http://localhost",
+                            "https://lively-bush-0d9b77d10.1.azurestaticapps.net",
                             "http://localhost/ImAngular",
                             "https://calm-mud-02aada210.1.azurestaticapps.net",
-                            "https://calm-mud-02aada210.1.azurestaticapps.net/ImReact"
+                            "https://localhost:7135", 
+                            "https://salmon-bay-0ee5f3310.1.azurestaticapps.net"
                             )
                         .AllowCredentials();
                 });
