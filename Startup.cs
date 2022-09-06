@@ -70,7 +70,8 @@ namespace IM_Core
                             "http://localhost/ImAngular",
                             "https://calm-mud-02aada210.1.azurestaticapps.net",
                             "https://localhost:7135", 
-                            "https://salmon-bay-0ee5f3310.1.azurestaticapps.net"
+                            "https://salmon-bay-0ee5f3310.1.azurestaticapps.net",
+                            "https://incidentbyid.azurewebsites.net"
                             )
                         .AllowCredentials();
                 });
