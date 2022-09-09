@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using IM.Common;
 using IM.Models;
 using IM.SQL;
+using IM_Core.Common;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,13 +18,14 @@ namespace IM_Core.ApiControllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly UsersMethods _usersMethods;       
-
+        private readonly UsersMethods _usersMethods;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        public UsersController(UsersMethods usersMethods, IWebHostEnvironment webHostEnvironment)
+        private readonly IEmailService _emailService;
+        public UsersController(UsersMethods usersMethods, IWebHostEnvironment webHostEnvironment, IEmailService emailService)
         {        
             _usersMethods = usersMethods;
             _webHostEnvironment = webHostEnvironment;
+            _emailService = emailService;
         }
 
         [HttpPost("authenticate")]
@@ -40,6 +42,7 @@ namespace IM_Core.ApiControllers
        // [Authorize]
         public async Task<IActionResult> AllUsersAsync()
         {
+            //_emailService.SendEmail();
             return Ok( await _usersMethods.GetAllUsersAsync());
         }
 

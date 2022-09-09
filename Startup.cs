@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using IM.Common;
 using IM.Hubs;
 using IM.SQL;
+using IM_Core.Common;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -43,7 +44,7 @@ namespace IM_Core
             services.AddScoped(typeof(UsersMethods));
             services.AddScoped(typeof(IncidentsMethods));
             services.AddScoped(typeof(MessagesMethods));
-
+            services.AddScoped<IEmailService, EmailService>();
 
             services.AddMvc(setupAction => {
                 setupAction.EnableEndpointRouting = false;
