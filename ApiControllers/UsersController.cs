@@ -9,6 +9,7 @@ using IM.SQL;
 using IM_Core.Common;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -21,11 +22,24 @@ namespace IM_Core.ApiControllers
         private readonly UsersMethods _usersMethods;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IEmailService _emailService;
-        public UsersController(UsersMethods usersMethods, IWebHostEnvironment webHostEnvironment, IEmailService emailService)
+        private readonly IConfiguration _configuration;
+        public UsersController(UsersMethods usersMethods, IWebHostEnvironment webHostEnvironment, IEmailService emailService, IConfiguration configuration)
         {        
             _usersMethods = usersMethods;
             _webHostEnvironment = webHostEnvironment;
             _emailService = emailService;
+            _configuration = configuration;
+        }
+
+        [HttpGet("Test")]
+        // [Authorize]
+        public async Task<IActionResult> Test()
+        {
+            //_emailService.SendEmail();
+            var storageConnectionString = "Nothing yet";
+            if(_configuration.GetValue<string>("ConnectionStringAzure") != null)
+                storageConnectionString = _configuration.GetValue<string>("ConnectionStringAzure");
+            return Ok(storageConnectionString);
         }
 
         [HttpPost("authenticate")]
