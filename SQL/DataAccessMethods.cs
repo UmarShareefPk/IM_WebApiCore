@@ -9,6 +9,7 @@ using WebApi.Options;
 using Microsoft.Extensions.Options;
 using System.Threading.Tasks;
 using IM_Core.Common;
+using Microsoft.Extensions.Configuration;
 
 namespace IM.SQL
 {
@@ -26,18 +27,20 @@ namespace IM.SQL
     public class DataAccessMethods
     {
         private readonly  ConnectionStringOptions _connectionString;
+        private IConfiguration _configuration;
 
-        public DataAccessMethods(IOptionsSnapshot<ConnectionStringOptions> connectionStringOptions)
+        public DataAccessMethods(IOptionsSnapshot<ConnectionStringOptions> connectionStringOptions, IConfiguration configuration)
         {
             _connectionString = connectionStringOptions.Value;
-
+            _configuration = configuration;
         }
         public async Task<DbResponse> ExecuteProcedureAsyncold(string procedureName, SortedList<string, object> parameters)
         {          
             var ds = new DataSet();
             //var con = new SqlConnection(ConfigurationManager.ConnectionStrings["IMConString"].ConnectionString);
             //var con = new SqlConnection("data source=localhost;initial catalog=IM;persist security info=True; Integrated Security=SSPI;");
-            var con = new SqlConnection(_connectionString.Main);
+          //  var con = new SqlConnection(_connectionString.Main);
+            var con = new SqlConnection(_configuration.GetValue<string>("ConnectionStringAzure"));
             var cmd = con.CreateCommand();
             cmd.CommandText = procedureName;
             cmd.CommandType = CommandType.StoredProcedure;
@@ -73,7 +76,7 @@ namespace IM.SQL
             var ds = new DataSet();
             try
             {
-                using (SqlConnection con = new SqlConnection(_connectionString.Main))
+                using (SqlConnection con = new SqlConnection(_configuration.GetValue<string>("ConnectionStringAzure")))
                 {
                     using (SqlCommand cmd = new SqlCommand(procedureName, con))
                     {
@@ -108,7 +111,7 @@ namespace IM.SQL
 
             try
             {
-                using (SqlConnection con = new SqlConnection(_connectionString.Main))
+                using (SqlConnection con = new SqlConnection(_configuration.GetValue<string>("ConnectionStringAzure")))
                 {
                     using (SqlCommand cmd = new SqlCommand(procedureName, con))
                     {

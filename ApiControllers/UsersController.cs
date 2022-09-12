@@ -33,12 +33,12 @@ namespace IM_Core.ApiControllers
 
         [HttpGet("Test")]
         // [Authorize]
-        public async Task<IActionResult> Test()
+        public async Task<IActionResult> TestEmail()
         {
-            //_emailService.SendEmail();
+            _emailService.SendEmail();
             var storageConnectionString = "Nothing yet";
-            if(_configuration.GetValue<string>("ConnectionStringAzure") != null)
-                storageConnectionString = _configuration.GetValue<string>("ConnectionStringAzure");
+            //if(_configuration.GetValue<string>("ConnectionStringAzure") != null)
+            //    storageConnectionString = _configuration.GetValue<string>("ConnectionStringAzure");
             return Ok(storageConnectionString);
         }
 

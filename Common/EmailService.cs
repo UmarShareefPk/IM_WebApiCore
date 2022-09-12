@@ -21,7 +21,7 @@ namespace IM_Core.Common
 
         public void SendEmail()
         {
-            EmailClient emailClient = new EmailClient(configuration.GetConnectionString("CommunicationService"));
+            EmailClient emailClient = new EmailClient(configuration.GetValue<string>("CommunicationService"));
             EmailContent emailContent = new EmailContent("Welcome to Azure Communication Service Email APIs.");
             emailContent.PlainText = "This email message is sent from Azure Communication Service Email using .NET SDK.";
             List<EmailAddress> emailAddresses = new List<EmailAddress>

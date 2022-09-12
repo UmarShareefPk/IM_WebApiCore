@@ -1,6 +1,7 @@
 using IM.Models;
 using IM.SQL;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -16,11 +17,13 @@ namespace IM.Common
     {
         private readonly RequestDelegate _next;
         private readonly AppSettings _appSettings;
+        private IConfiguration _configuration;
 
-        public JwtMiddleware(RequestDelegate next, IOptions<AppSettings> appSettings)
+        public JwtMiddleware(RequestDelegate next, IOptions<AppSettings> appSettings, IConfiguration configuration)
         {
             _next = next;
             _appSettings = appSettings.Value;
+            _configuration = configuration;
            // _usersMethods = usersMethods;
         }
 
@@ -36,10 +39,11 @@ namespace IM.Common
 
         private async Task attachUserToContextAsync(HttpContext context, string token, UsersMethods usersMethods)
         {
+            string jwtSecret = _configuration.GetValue<string>("JwtSecret");
             try
             {
                 var tokenHandler = new JwtSecurityTokenHandler();
-                var key = Encoding.ASCII.GetBytes("This is very secret.");
+                var key = Encoding.ASCII.GetBytes(jwtSecret);
                 tokenHandler.ValidateToken(token, new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
