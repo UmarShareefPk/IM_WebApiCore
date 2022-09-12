@@ -43,7 +43,7 @@ namespace IM.Common
             try
             {
                 var tokenHandler = new JwtSecurityTokenHandler();
-                var key = Encoding.ASCII.GetBytes(jwtSecret);
+                var key = Encoding.UTF8.GetBytes(jwtSecret);
                 tokenHandler.ValidateToken(token, new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,

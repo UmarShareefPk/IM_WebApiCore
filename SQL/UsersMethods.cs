@@ -12,10 +12,12 @@ namespace IM.SQL
     public class UsersMethods
     {
         private readonly DataAccessMethods dbAccess;
+        private IConfiguration _configuration;
 
-        public UsersMethods(DataAccessMethods dataAccessMethods)
+        public UsersMethods(DataAccessMethods dataAccessMethods, IConfiguration configuration)
         {
             dbAccess = dataAccessMethods;
+            _configuration = configuration;
         }
         public async Task<UserLogin> LoginAsync(string username, string password)
         {
@@ -71,7 +73,7 @@ namespace IM.SQL
             var userLogin = await LoginAsync(model.Username, model.Password);
             // authentication successful so generate jwt token
             if (userLogin != null)
-                userLogin.Token = JWT.generateJwtToken(userLogin, "This is very secret.");
+                userLogin.Token = JWT.generateJwtToken(userLogin, _configuration.GetValue<string>("JwtSecret"));
 
             return userLogin;
         }
