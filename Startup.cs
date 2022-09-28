@@ -73,7 +73,8 @@ namespace IM_Core
                             "https://localhost:7135", 
                             "https://salmon-bay-0ee5f3310.1.azurestaticapps.net",
                             "https://immvc6.azurewebsites.net",
-                            "https://incidentbyid.azurewebsites.net"
+                            "https://incidentbyid.azurewebsites.net",
+                            "https://green-coast-003a53010.1.azurestaticapps.net"
                             )
                         .AllowCredentials();
                 });
